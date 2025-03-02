@@ -1,20 +1,19 @@
 {
   "buildCommand": "bun run build",
-  "env": {
-    "NODE_OPTIONS": "--experimental-modules --es-module-specifier-resolution=node",
-    "NODEJS_HELPERS": "0"
-  },
-  "framework": null,
-  "functions": {
-    "api/**/*": {
-      "runtime": "@vercel/node"
-    }
-  },
-  "outputDirectory": "dist",
-  "rewrites": [
+  "builds": [
     {
-      "destination": "/api/index.js",
-      "source": "/(.*)"
+      "src": "src/index.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["node_modules/**"]
+      }
+    }
+  ],
+  "installCommand": "bun install",
+  "routes": [
+    {
+      "dest": "src/index.ts",
+      "src": "/(.*)"
     }
   ],
   "version": 2
