@@ -5,7 +5,7 @@ import { prettyJSON } from "hono/pretty-json";
 import { languageDetector } from "hono/language";
 import { cache } from "hono/cache";
 import type { MiddlewareHandler } from "hono";
-import { serveStatic } from "hono/bun";
+import { serveStatic } from "hono/node-server";
 import { cors } from "hono/cors";
 import {
   getSurrealDB,
