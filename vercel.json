@@ -1,21 +1,15 @@
 {
-  "buildCommand": "bun run build",
-  "builds": [
+  "redirects": [
     {
-      "src": "dist/index.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["node_modules/**"],
-        "nodeVersion": "18.x"
-      }
+      "destination": "/api",
+      "permanent": false,
+      "source": "/"
     }
   ],
-  "installCommand": "bun install",
-  "routes": [
+  "rewrites": [
     {
-      "dest": "dist/index.js",
-      "src": "/(.*)"
+      "destination": "/api",
+      "source": "/api/(.*)"
     }
-  ],
-  "version": 2
+  ]
 }
