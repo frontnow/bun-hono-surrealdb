@@ -110,35 +110,36 @@ export const getProducts = async (
       }
     }
 
-    // Apply pagination if parameters are provided
-    let query = `
+    // Simple query without pagination (we'll handle pagination in JavaScript)
+    const query = `
       SELECT *, ->product_brand->brands[*] AS brands FROM product
-      FETCH brand
+      FETCH brand;
     `;
-
-    // Add pagination with correct SurrealDB syntax
-    // SurrealDB uses standard LIMIT and START parameters separately
-    if (limit !== undefined) {
-      query += ` LIMIT ${limit}`;
-    }
-
-    if (offset !== undefined && offset > 0) {
-      query += ` START ${offset}`;
-    }
-
-    query += `;`;
 
     const result = await db.query(query);
 
     // Ensure consistent result structure
-    let data = [];
+    let allData = [];
     if (
       result &&
       Array.isArray(result) &&
       result.length > 0 &&
       Array.isArray(result[0])
     ) {
-      data = result[0];
+      allData = result[0];
+    }
+
+    // Apply pagination in JavaScript
+    let data = allData;
+    if (offset !== undefined && limit !== undefined) {
+      data = allData.slice(offset, offset + limit);
+    } else if (limit !== undefined) {
+      data = allData.slice(0, limit);
+    }
+
+    // If total is still 0, use the length of all data
+    if (total <= 0 && allData.length > 0) {
+      total = allData.length;
     }
 
     return {
