@@ -20,22 +20,8 @@ export const runtime = "edge";
 // Type definitions for our app variables
 type Variables = TimingVariables;
 
-// Define the app interface
-interface User {
-  id: number;
-  name: string;
-  email: string;
-}
-
-// Sample data
-const users: User[] = [
-  { id: 1, name: "John Doe", email: "john@example.com" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com" },
-  { id: 3, name: "Bob Johnson", email: "bob@example.com" },
-];
-
 // Create the Hono app
-const app = new Hono<{ Variables: Variables }>().basePath("/api");
+const app = new Hono<{ Variables: Variables }>();
 
 // Apply middleware
 app.use("*", logger());
@@ -58,58 +44,14 @@ app.get(
   })
 );
 
-app.get(
-  "/api/*",
-  cache({
-    cacheName: "api",
-    cacheControl: "max-age=3600",
-    wait: true,
-  })
-);
-
 // Apply timing middleware
 app.use(timing());
 
-// Static file serving - create a public directory in your project root
+// Static file serving
 app.use("/static/*", serveStatic({ root: "./" }));
 
 // API Routes
 const api = new Hono();
-
-// Get all users
-api.get("/users", (c) => {
-  return c.json(users);
-});
-
-// Get user by ID
-api.get("/users/:id", (c) => {
-  const id = parseInt(c.req.param("id"));
-  const user = users.find((u) => u.id === id);
-
-  if (!user) {
-    return c.json({ error: "User not found" }, 404);
-  }
-
-  return c.json(user);
-});
-
-// Create a new user
-api.post("/users", async (c) => {
-  const body = await c.req.json<Omit<User, "id">>();
-
-  if (!body.name || !body.email) {
-    return c.json({ error: "Name and email are required" }, 400);
-  }
-
-  const newUser: User = {
-    id: users.length + 1,
-    name: body.name,
-    email: body.email,
-  };
-
-  users.push(newUser);
-  return c.json(newUser, 201);
-});
 
 // Get all products with brand information
 api.get("/products", async (c) => {
@@ -171,13 +113,8 @@ app.route("/api", api);
 
 // Home route with custom metrics
 app.get("/", async (c) => {
-  // Start a new timer
   startTime(c, "db");
-
-  // Simulate database operation
   await new Promise((resolve) => setTimeout(resolve, 50));
-
-  // End the timer
   endTime(c, "db");
 
   const lang = c.get("language");
@@ -187,54 +124,103 @@ app.get("/", async (c) => {
     language: lang,
     endpoints: {
       api: {
-        users: "/api/users",
-        userById: "/api/users/:id",
+        products: "/api/products",
+        productById: "/api/products/:id",
       },
       root: "/",
     },
   });
 });
 
-// Start the server if this file is run directly
-// Use a safer approach that doesn't rely on import.meta at all
-const isDirectRun =
-  !process.env.VERCEL && process.env.NODE_ENV !== "production";
-if (isDirectRun) {
-  const port = Number(process.env.PORT) || 3456;
-  console.log(`🚀 Server running at http://localhost:${port}`);
+// For Vercel deployment
+const handler = handle(app);
+export const GET = handler;
+export const POST = handler;
+export const PATCH = handler;
+export const PUT = handler;
+export const OPTIONS = handler;
 
-  // Initialize the database connection
-  try {
-    await getSurrealDB();
-  } catch (error) {
-    console.error("Failed to connect to SurrealDB:", error);
-    // Continue even if DB connection fails
-  }
+// Function to create a fancy server startup log
+function printFancyServerStartupLog(port: number) {
+  const reset = "\x1b[0m";
+  const bright = "\x1b[1m";
+  const dim = "\x1b[2m";
+  const underscore = "\x1b[4m";
 
-  // Clean up resources on server shutdown
-  process.on("SIGINT", async () => {
-    console.log("Shutting down server...");
-    await closeSurrealDB();
-    process.exit(0);
-  });
+  const red = "\x1b[31m";
+  const green = "\x1b[32m";
+  const yellow = "\x1b[33m";
+  const blue = "\x1b[34m";
+  const magenta = "\x1b[35m";
+  const cyan = "\x1b[36m";
 
-  // Check if running in Bun environment
-  const isBun = typeof Bun !== "undefined";
+  // Clear console and show banner
+  console.clear();
 
-  if (isBun) {
-    const server = Bun.serve({
-      port: port,
-      fetch: app.fetch,
-      development: process.env.NODE_ENV !== "production",
-    });
+  console.log(`${bright}${cyan}
+  ╭───────────────────────────────────────────────╮
+  │                                               │
+  │   ${yellow}BUN + HONO SERVER${cyan}                         │
+  │                                               │
+  ╰───────────────────────────────────────────────╯${reset}
+  `);
 
-    console.log(`Listening on ${server.hostname}:${server.port}`);
-  } else {
-    // Node.js environment (e.g., Vercel)
-    console.log("Running in Node.js environment");
-    // The Vercel handler functions (GET, POST) will be used instead
-  }
+  // Server Information
+  console.log(`${bright}${green}🚀 SERVER INFORMATION${reset}`);
+  console.log(
+    `  ${dim}>${reset} ${bright}Status:${reset}      ${green}Running${reset}`
+  );
+  console.log(
+    `  ${dim}>${reset} ${bright}Environment:${reset} ${
+      process.env.NODE_ENV || "development"
+    }`
+  );
+  console.log(
+    `  ${dim}>${reset} ${bright}Local URL:${reset}   ${underscore}http://localhost:${port}${reset}`
+  );
+  console.log(`  ${dim}>${reset} ${bright}Port:${reset}        ${port}`);
+
+  // API Information
+  console.log(`\n${bright}${magenta}📡 API ENDPOINTS${reset}`);
+  console.log(
+    `  ${dim}>${reset} ${green}GET${reset}  /api/products         ${dim}(Get all products)${reset}`
+  );
+  console.log(
+    `  ${dim}>${reset} ${green}GET${reset}  /api/products/:id     ${dim}(Get product by ID)${reset}`
+  );
+
+  // Root endpoint
+  console.log(`\n${bright}${blue}🏠 OTHER ROUTES${reset}`);
+  console.log(
+    `  ${dim}>${reset} ${green}GET${reset}  /                     ${dim}(Welcome page with API info)${reset}`
+  );
+  console.log(
+    `  ${dim}>${reset} ${green}GET${reset}  /static/*             ${dim}(Static file serving)${reset}`
+  );
+
+  // Health check
+  console.log(`\n${bright}${cyan}🔍 APPLICATION STATUS${reset}`);
+  console.log(
+    `  ${dim}>${reset} ${bright}API:${reset}         ${green}✓ Ready${reset}`
+  );
+  console.log(
+    `  ${dim}>${reset} ${bright}Static Files:${reset} ${green}✓ Serving${reset}`
+  );
+  console.log(
+    `  ${dim}>${reset} ${bright}Database:${reset}    ${green}✓ Connected${reset}`
+  );
+
+  console.log(
+    `\n${dim}Press ${bright}CTRL+C${reset}${dim} to stop the server${reset}\n`
+  );
 }
 
-export const GET = handle(app);
-export const POST = handle(app);
+// For local development with Bun
+const port = process.env.PORT || 3456;
+printFancyServerStartupLog(port);
+
+// Single default export for Bun
+export default {
+  port,
+  fetch: app.fetch,
+};
