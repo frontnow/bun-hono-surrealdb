@@ -1,0 +1,32 @@
+{
+  // The path to the `bun` executable.
+  "bun.runtime": "bun",
+
+  "bun.debugTerminal": {
+    // If support for Bun should be added to the default "JavaScript Debug Terminal".
+    "enabled": true,
+
+    // If the debugger should stop on the first line of the program.
+    "stopOnEntry": false,
+  },
+  
+  // TypeScript settings
+  "typescript.tsdk": "node_modules/typescript/lib",
+  
+  // Editor settings
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  
+  // File associations
+  "files.associations": {
+    "*.css": "css",
+    "*.js": "javascript",
+    "*.ts": "typescript",
+    "*.json": "json"
+  },
+  
+  // Telemetry
+  "telemetry.telemetryLevel": "off"
+}
