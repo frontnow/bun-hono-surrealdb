@@ -216,7 +216,7 @@ function printFancyServerStartupLog(port: number) {
 }
 
 // For local development with Bun
-const port = process.env.PORT || 3456;
+const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3456;
 printFancyServerStartupLog(port);
 
 // Single default export for Bun
