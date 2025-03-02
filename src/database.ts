@@ -68,13 +68,26 @@ export const getProducts = async (
     const countResult = await db.query(`
       SELECT count() AS total FROM product;
     `);
-    // Handle unknown type from SurrealDB - adjust to match structure returned
-    const total =
-      countResult && Array.isArray(countResult) && countResult.length > 0
-        ? typeof countResult[0].total === "number"
-          ? countResult[0].total
-          : (countResult[0].result && countResult[0].result.total) || 1
-        : 1;
+
+    // Handle unknown type from SurrealDB with proper type handling
+    let total = 1; // Default to 1 to ensure pagination works
+
+    if (countResult && Array.isArray(countResult) && countResult.length > 0) {
+      const firstResult = countResult[0] as unknown as Record<string, unknown>;
+
+      if (typeof firstResult.total === "number") {
+        total = firstResult.total;
+      } else if (
+        firstResult.result &&
+        typeof firstResult.result === "object" &&
+        firstResult.result !== null &&
+        "total" in firstResult.result &&
+        typeof (firstResult.result as Record<string, unknown>).total ===
+          "number"
+      ) {
+        total = (firstResult.result as Record<string, unknown>).total as number;
+      }
+    }
 
     // Apply pagination if parameters are provided
     let query = `
