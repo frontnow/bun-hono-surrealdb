@@ -116,11 +116,13 @@ export const getProducts = async (
       FETCH brand
     `;
 
+    // Add pagination with correct SurrealDB syntax
+    // Note: SurrealDB uses LIMIT [offset,] limit syntax
     if (limit !== undefined) {
-      query += ` LIMIT ${limit}`;
-
       if (offset !== undefined) {
-        query += ` START AT ${offset}`;
+        query += ` LIMIT ${offset}, ${limit}`;
+      } else {
+        query += ` LIMIT ${limit}`;
       }
     }
 
