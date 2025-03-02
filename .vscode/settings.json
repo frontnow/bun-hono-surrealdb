@@ -7,18 +7,18 @@
     "enabled": true,
 
     // If the debugger should stop on the first line of the program.
-    "stopOnEntry": false,
+    "stopOnEntry": false
   },
-  
+
   // TypeScript settings
   "typescript.tsdk": "node_modules/typescript/lib",
-  
+
   // Editor settings
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
-  
+
   // File associations
   "files.associations": {
     "*.css": "css",
@@ -26,7 +26,7 @@
     "*.ts": "typescript",
     "*.json": "json"
   },
-  
+
   // Telemetry
   "telemetry.telemetryLevel": "off"
 }
