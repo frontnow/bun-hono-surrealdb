@@ -44,3 +44,8 @@ Thumbs.db/
 
 # windsurf rules
 .windsurfrules
+
+# Vercel
+.vercel
+.output
+
