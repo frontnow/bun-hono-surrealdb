@@ -196,10 +196,10 @@ app.get("/", async (c) => {
 });
 
 // Start the server if this file is run directly
-// Replace import.meta.main with a cross-runtime detection approach
-const isDirectlyExecuted =
-  process.argv[1] === import.meta.url.substring(7) || import.meta.main;
-if (isDirectlyExecuted) {
+// Use a safer approach that doesn't rely on import.meta at all
+const isDirectRun =
+  !process.env.VERCEL && process.env.NODE_ENV !== "production";
+if (isDirectRun) {
   const port = Number(process.env.PORT) || 3456;
   console.log(`🚀 Server running at http://localhost:${port}`);
 
