@@ -45,60 +45,70 @@ const sampleProducts = [
     name: "Smartphone Pro",
     price: 999.99,
     description: "High-end smartphone with advanced features",
+    url: "https://example.com/smartphone-pro",
     brand: "brands:apple",
   },
   {
     name: 'Smart TV 55"',
     price: 699.5,
     description: "Ultra HD Smart TV with voice control",
+    url: "https://example.com/smart-tv-55",
     brand: "brands:samsung",
   },
   {
     name: "Wireless Headphones",
     price: 249.99,
     description: "Noise-cancelling wireless headphones",
+    url: "https://example.com/wireless-headphones",
     brand: "brands:sony",
   },
   {
     name: "Refrigerator Model X",
     price: 1299.0,
     description: "Energy-efficient smart refrigerator",
+    url: "https://example.com/refrigerator-model-x",
     brand: "brands:lg",
   },
   {
     name: "Power Drill",
     price: 129.95,
     description: "Cordless power drill with extra batteries",
+    url: "https://example.com/power-drill",
     brand: "brands:bosch",
   },
   {
     name: "Coffee Maker",
     price: 89.99,
     description: "Programmable coffee maker with timer",
+    url: "https://example.com/coffee-maker",
     brand: "brands:bosch",
   },
   {
     name: "Tablet Pro",
     price: 799.0,
     description: "Lightweight tablet with long battery life",
+    url: "https://example.com/tablet-pro",
     brand: "brands:apple",
   },
   {
     name: "Washing Machine",
     price: 649.5,
     description: "Front-loading washing machine with steam function",
+    url: "https://example.com/washing-machine",
     brand: "brands:samsung",
   },
   {
     name: "Bluetooth Speaker",
     price: 79.99,
     description: "Portable waterproof Bluetooth speaker",
+    url: "https://example.com/bluetooth-speaker",
     brand: "brands:sony",
   },
   {
     name: "Air Conditioner",
     price: 549.0,
     description: "Smart air conditioner with energy saving mode",
+    url: "https://example.com/air-conditioner",
     brand: "brands:lg",
   },
 ];
@@ -172,7 +182,8 @@ async function addSampleProducts(db) {
         CREATE product SET 
         name = '${product.name}',
         price = ${product.price},
-        description = '${product.description}'
+        description = '${product.description}',
+        url = '${product.url}'
       `);
 
       console.log(`Create product result:`, JSON.stringify(result));
