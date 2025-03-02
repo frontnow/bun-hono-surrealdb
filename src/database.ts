@@ -1,4 +1,4 @@
-import { Surreal } from 'surrealdb';
+import { Surreal } from "surrealdb";
 
 // Create a singleton instance of the SurrealDB client
 let dbInstance: Surreal | null = null;
@@ -15,15 +15,18 @@ export const getSurrealDB = async (): Promise<Surreal> => {
     // Connect to the database
     try {
       // Connect to the SurrealDB server with namespace and database included
-      await dbInstance.connect('wss://product-graph-06ab59i8odvsj7v3ve16ctlcgg.aws-euw1.surreal.cloud/rpc', {
-        namespace: 'Product Graph',
-        database: 'Product Graph'
-      });
+      await dbInstance.connect(
+        "wss://product-graph-06ab59i8odvsj7v3ve16ctlcgg.aws-euw1.surreal.cloud/rpc",
+        {
+          namespace: "Product Graph",
+          database: "Product Graph",
+        }
+      );
 
       // Authenticate with credentials
       await dbInstance.signin({
-        username: 'root',
-        password: 'VerySecurePassword!'
+        username: "root",
+        password: "VerySecurePassword!",
       });
 
       console.log("🔌 SurrealDB connection established");
@@ -49,16 +52,45 @@ export const closeSurrealDB = async (): Promise<void> => {
 };
 
 /**
- * Get all products with their related brands
- * @returns Array of products with brand information
+ * Get all products with their related brands with pagination support
+ * @param limit Optional number of products to return
+ * @param offset Optional offset for pagination
+ * @returns Array of products with brand information and pagination metadata
  */
-export const getProducts = async (): Promise<any[]> => {
+export const getProducts = async (
+  limit?: number,
+  offset?: number
+): Promise<{ data: any[]; total: number }> => {
   try {
     const db = await getSurrealDB();
-    const result = await db.query(`
-      SELECT *, ->product_brand->brands[*] AS brands FROM product;
+
+    // Count total products for pagination metadata
+    const countResult = await db.query(`
+      SELECT count() FROM product;
     `);
-    return result;
+    const total = countResult[0].count || 0;
+
+    // Apply pagination if parameters are provided
+    let query = `
+      SELECT *, ->product_brand->brands[*] AS brands FROM product
+    `;
+
+    if (limit !== undefined) {
+      query += ` LIMIT ${limit}`;
+
+      if (offset !== undefined) {
+        query += ` START AT ${offset}`;
+      }
+    }
+
+    query += `;`;
+
+    const result = await db.query(query);
+
+    return {
+      data: result,
+      total,
+    };
   } catch (error) {
     console.error("❌ Error fetching products:", error);
     throw error;
