@@ -138,16 +138,32 @@ app.use("/static/*", serveStatic({ root: "./" }));
 // API Routes
 const api = new Hono();
 
-// Get all products with brand information
+// Get all products with brand information (with pagination)
 api.get("/products", async (c) => {
   try {
     startTime(c, "get-products");
-    const products = await getProducts();
+
+    // Extract pagination parameters from query
+    const limitParam = c.req.query("limit");
+    const offsetParam = c.req.query("offset");
+
+    // Parse parameters (with fallback to undefined for optional pagination)
+    const limit = limitParam ? parseInt(limitParam, 10) : undefined;
+    const offset = offsetParam ? parseInt(offsetParam, 10) : undefined;
+
+    // Get paginated products
+    const { data: products, total } = await getProducts(limit, offset);
     endTime(c, "get-products");
 
     return c.json({
       success: true,
       data: products,
+      pagination: {
+        total,
+        limit,
+        offset,
+        hasMore: limit !== undefined ? offset + limit < total : false,
+      },
     });
   } catch (error) {
     return c.json(
