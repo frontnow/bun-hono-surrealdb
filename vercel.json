@@ -1,9 +1,15 @@
 {
   "buildCommand": "bun run build",
   "env": {
+    "NODE_OPTIONS": "--experimental-modules --es-module-specifier-resolution=node",
     "NODEJS_HELPERS": "0"
   },
   "framework": null,
+  "functions": {
+    "api/**/*": {
+      "runtime": "@vercel/node"
+    }
+  },
   "outputDirectory": "dist",
   "rewrites": [
     {
