@@ -68,7 +68,13 @@ export const getProducts = async (
     const countResult = await db.query(`
       SELECT count() FROM product;
     `);
-    const total = countResult[0].count || 0;
+    // Handle unknown type from SurrealDB
+    const total =
+      countResult[0] &&
+      typeof countResult[0] === "object" &&
+      "count" in countResult[0]
+        ? (countResult[0].count as number)
+        : 0;
 
     // Apply pagination if parameters are provided
     let query = `
