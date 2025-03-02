@@ -64,34 +64,56 @@ export const getProducts = async (
   try {
     const db = await getSurrealDB();
 
-    // Count total products for pagination metadata
-    const countResult = await db.query(`
-      SELECT count() AS total FROM product;
-    `);
+    // Simplified, more direct count query
+    const countQuery = `SELECT count() FROM product`;
+    const countResult = await db.query(countQuery);
 
-    // Handle unknown type from SurrealDB with proper type handling
-    let total = 1; // Default to 1 to ensure pagination works
+    // Extract count properly from SurrealDB response
+    let total = 0;
 
-    if (countResult && Array.isArray(countResult) && countResult.length > 0) {
-      const firstResult = countResult[0] as unknown as Record<string, unknown>;
+    if (
+      countResult &&
+      Array.isArray(countResult) &&
+      countResult.length > 0 &&
+      Array.isArray(countResult[0]) &&
+      countResult[0].length > 0
+    ) {
+      const countObj = countResult[0][0];
+      if (countObj && typeof countObj === "object" && countObj !== null) {
+        // Try to extract the count from various possible formats
+        if ("count" in countObj && typeof countObj.count === "number") {
+          total = countObj.count;
+        } else if (
+          "result" in countObj &&
+          typeof countObj.result === "number"
+        ) {
+          total = countObj.result;
+        }
+      }
+    }
 
-      if (typeof firstResult.total === "number") {
-        total = firstResult.total;
-      } else if (
-        firstResult.result &&
-        typeof firstResult.result === "object" &&
-        firstResult.result !== null &&
-        "total" in firstResult.result &&
-        typeof (firstResult.result as Record<string, unknown>).total ===
-          "number"
+    // Ensure we have at least 1 for the count if query failed
+    if (total <= 0) {
+      // Fallback to counting products directly
+      const productsQuery = `SELECT * FROM product`;
+      const productsResult = await db.query(productsQuery);
+
+      if (
+        productsResult &&
+        Array.isArray(productsResult) &&
+        productsResult.length > 0 &&
+        Array.isArray(productsResult[0])
       ) {
-        total = (firstResult.result as Record<string, unknown>).total as number;
+        total = productsResult[0].length;
+      } else {
+        total = 1; // Default fallback
       }
     }
 
     // Apply pagination if parameters are provided
     let query = `
       SELECT *, ->product_brand->brands[*] AS brands FROM product
+      FETCH brand
     `;
 
     if (limit !== undefined) {
@@ -106,8 +128,19 @@ export const getProducts = async (
 
     const result = await db.query(query);
 
+    // Ensure consistent result structure
+    let data = [];
+    if (
+      result &&
+      Array.isArray(result) &&
+      result.length > 0 &&
+      Array.isArray(result[0])
+    ) {
+      data = result[0];
+    }
+
     return {
-      data: result,
+      data,
       total,
     };
   } catch (error) {
