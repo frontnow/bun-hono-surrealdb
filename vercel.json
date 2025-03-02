@@ -4,11 +4,6 @@
     "NODEJS_HELPERS": "0"
   },
   "framework": null,
-  "functions": {
-    "api/index.js": {
-      "runtime": "vercel-node@2.15.10"
-    }
-  },
   "outputDirectory": "dist",
   "rewrites": [
     {
