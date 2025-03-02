@@ -5,7 +5,6 @@ import { prettyJSON } from "hono/pretty-json";
 import { languageDetector } from "hono/language";
 import { cache } from "hono/cache";
 import type { MiddlewareHandler } from "hono";
-import { serveStatic } from "@hono/node-server";
 import { cors } from "hono/cors";
 import {
   getSurrealDB,
@@ -119,21 +118,8 @@ app.use(
   })
 );
 
-// Cache certain routes
-app.get(
-  "/static/*",
-  cache({
-    cacheName: "static-assets",
-    cacheControl: "max-age=3600",
-    wait: true,
-  })
-);
-
 // Apply timing middleware
 app.use(timing());
-
-// Static file serving
-app.use("/static/*", serveStatic({ root: "./" }));
 
 // API Routes
 const api = new Hono();
