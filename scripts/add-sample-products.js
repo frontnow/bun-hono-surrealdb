@@ -188,16 +188,21 @@ async function addSampleProducts(db) {
 
       console.log(`Create product result:`, JSON.stringify(result));
 
+      // SurrealDB returns a nested array structure: [[{product}]]
       if (
         !result ||
         !Array.isArray(result) ||
         result.length === 0 ||
-        !result[0]
+        !Array.isArray(result[0]) ||
+        result[0].length === 0 ||
+        !result[0][0] ||
+        !result[0][0].id
       ) {
         throw new Error(`Failed to create product: ${product.name}`);
       }
 
-      const productId = result[0].id;
+      // Correctly extract ID from the nested array
+      const productId = result[0][0].id;
       console.log(`✅ Created product: ${product.name} with ID: ${productId}`);
 
       // Create relationship to brand
