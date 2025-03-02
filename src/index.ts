@@ -7,7 +7,15 @@ import { logger } from "hono/logger";
 import { cache } from "hono/cache";
 import { serveStatic } from "hono/bun";
 import { cors } from "hono/cors";
-import { getSurrealDB, closeSurrealDB, getProducts, getProductById } from "./database";
+import {
+  getSurrealDB,
+  closeSurrealDB,
+  getProducts,
+  getProductById,
+} from "./database";
+import { handle } from "hono/vercel";
+
+export const runtime = "edge";
 
 // Type definitions for our app variables
 type Variables = TimingVariables;
@@ -21,18 +29,18 @@ interface User {
 
 // Sample data
 const users: User[] = [
-  { id: 1, name: 'John Doe', email: 'john@example.com' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
-  { id: 3, name: 'Bob Johnson', email: 'bob@example.com' }
+  { id: 1, name: "John Doe", email: "john@example.com" },
+  { id: 2, name: "Jane Smith", email: "jane@example.com" },
+  { id: 3, name: "Bob Johnson", email: "bob@example.com" },
 ];
 
 // Create the Hono app
-const app = new Hono<{ Variables: Variables }>();
+const app = new Hono<{ Variables: Variables }>().basePath("/api");
 
 // Apply middleware
-app.use('*', logger());
-app.use('*', prettyJSON());
-app.use('*', cors());
+app.use("*", logger());
+app.use("*", prettyJSON());
+app.use("*", cors());
 app.use(
   languageDetector({
     supportedLanguages: ["en", "de", "fr"],
@@ -63,40 +71,40 @@ app.get(
 app.use(timing());
 
 // Static file serving - create a public directory in your project root
-app.use('/static/*', serveStatic({ root: './' }));
+app.use("/static/*", serveStatic({ root: "./" }));
 
 // API Routes
 const api = new Hono();
 
 // Get all users
-api.get('/users', (c) => {
+api.get("/users", (c) => {
   return c.json(users);
 });
 
 // Get user by ID
-api.get('/users/:id', (c) => {
-  const id = parseInt(c.req.param('id'));
-  const user = users.find(u => u.id === id);
+api.get("/users/:id", (c) => {
+  const id = parseInt(c.req.param("id"));
+  const user = users.find((u) => u.id === id);
 
   if (!user) {
-    return c.json({ error: 'User not found' }, 404);
+    return c.json({ error: "User not found" }, 404);
   }
 
   return c.json(user);
 });
 
 // Create a new user
-api.post('/users', async (c) => {
-  const body = await c.req.json<Omit<User, 'id'>>();
+api.post("/users", async (c) => {
+  const body = await c.req.json<Omit<User, "id">>();
 
   if (!body.name || !body.email) {
-    return c.json({ error: 'Name and email are required' }, 400);
+    return c.json({ error: "Name and email are required" }, 400);
   }
 
   const newUser: User = {
     id: users.length + 1,
     name: body.name,
-    email: body.email
+    email: body.email,
   };
 
   users.push(newUser);
@@ -104,7 +112,7 @@ api.post('/users', async (c) => {
 });
 
 // Get all products with brand information
-api.get('/products', async (c) => {
+api.get("/products", async (c) => {
   try {
     startTime(c, "get-products");
     const products = await getProducts();
@@ -112,45 +120,54 @@ api.get('/products', async (c) => {
 
     return c.json({
       success: true,
-      data: products
+      data: products,
     });
   } catch (error) {
-    return c.json({
-      success: false,
-      error: error instanceof Error ? error.message : String(error)
-    }, 500);
+    return c.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      },
+      500
+    );
   }
 });
 
 // Get product by ID
-api.get('/products/:id', async (c) => {
+api.get("/products/:id", async (c) => {
   try {
-    const id = c.req.param('id');
+    const id = c.req.param("id");
     startTime(c, "get-product");
     const product = await getProductById(id);
     endTime(c, "get-product");
 
     if (!product) {
-      return c.json({
-        success: false,
-        error: 'Product not found'
-      }, 404);
+      return c.json(
+        {
+          success: false,
+          error: "Product not found",
+        },
+        404
+      );
     }
 
     return c.json({
       success: true,
-      data: product
+      data: product,
     });
   } catch (error) {
-    return c.json({
-      success: false,
-      error: error instanceof Error ? error.message : String(error)
-    }, 500);
+    return c.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      },
+      500
+    );
   }
 });
 
 // Mount the API under /api
-app.route('/api', api);
+app.route("/api", api);
 
 // Home route with custom metrics
 app.get("/", async (c) => {
@@ -158,7 +175,7 @@ app.get("/", async (c) => {
   startTime(c, "db");
 
   // Simulate database operation
-  await new Promise(resolve => setTimeout(resolve, 50));
+  await new Promise((resolve) => setTimeout(resolve, 50));
 
   // End the timer
   endTime(c, "db");
@@ -166,20 +183,23 @@ app.get("/", async (c) => {
   const lang = c.get("language");
 
   return c.json({
-    message: 'Welcome to Hono with Bun!',
+    message: "Welcome to Hono with Bun!",
     language: lang,
     endpoints: {
       api: {
-        users: '/api/users',
-        userById: '/api/users/:id'
+        users: "/api/users",
+        userById: "/api/users/:id",
       },
-      root: '/'
-    }
+      root: "/",
+    },
   });
 });
 
 // Start the server if this file is run directly
-if (import.meta.main) {
+// Replace import.meta.main with a cross-runtime detection approach
+const isDirectlyExecuted =
+  process.argv[1] === import.meta.url.substring(7) || import.meta.main;
+if (isDirectlyExecuted) {
   const port = Number(process.env.PORT) || 3456;
   console.log(`🚀 Server running at http://localhost:${port}`);
 
@@ -192,19 +212,29 @@ if (import.meta.main) {
   }
 
   // Clean up resources on server shutdown
-  process.on('SIGINT', async () => {
-    console.log('Shutting down server...');
+  process.on("SIGINT", async () => {
+    console.log("Shutting down server...");
     await closeSurrealDB();
     process.exit(0);
   });
 
-  const server = Bun.serve({
-    port: port,
-    fetch: app.fetch,
-    development: process.env.NODE_ENV !== 'production'
-  });
+  // Check if running in Bun environment
+  const isBun = typeof Bun !== "undefined";
 
-  console.log(`Listening on ${server.hostname}:${server.port}`);
+  if (isBun) {
+    const server = Bun.serve({
+      port: port,
+      fetch: app.fetch,
+      development: process.env.NODE_ENV !== "production",
+    });
+
+    console.log(`Listening on ${server.hostname}:${server.port}`);
+  } else {
+    // Node.js environment (e.g., Vercel)
+    console.log("Running in Node.js environment");
+    // The Vercel handler functions (GET, POST) will be used instead
+  }
 }
 
-export default app;
+export const GET = handle(app);
+export const POST = handle(app);
