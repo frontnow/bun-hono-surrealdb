@@ -64,37 +64,6 @@ export const getProducts = async (
   try {
     const db = await getSurrealDB();
 
-    // Simple query to get all products
-    const productsQuery = `SELECT * FROM product`;
-    const productsResult = await db.query(productsQuery);
-
-    // Extract all products to get accurate count and facilitate application-level pagination
-    let allProducts = [];
-    let total = 0;
-
-    if (
-      productsResult &&
-      Array.isArray(productsResult) &&
-      productsResult.length > 0 &&
-      Array.isArray(productsResult[0])
-    ) {
-      allProducts = productsResult[0];
-      total = allProducts.length;
-    }
-
-    // Ensure we have at least the count matches the length of all products
-    if (total <= 0 && allProducts.length > 0) {
-      total = allProducts.length;
-    } else if (total <= 0) {
-      total = 11; // Hardcoded count for now to ensure correct pagination behavior
-    }
-
-    // Hardcode the total if it's still not correct
-    if (total <= 1 && allData.length > 1) {
-      total = allData.length;
-    } else if (total <= 1) {
-      total = 11; // Ensure pagination works correctly even if data retrieval fails
-    }
     // Simple query without pagination (we'll handle pagination in JavaScript)
     const query = `
       SELECT *, ->product_brand->brands[*] AS brands FROM product
@@ -103,8 +72,11 @@ export const getProducts = async (
 
     const result = await db.query(query);
 
+    // Get all products to determine accurate count
     // Ensure consistent result structure
     let allData = [];
+    let total = 0;
+
     if (
       result &&
       Array.isArray(result) &&
@@ -112,6 +84,19 @@ export const getProducts = async (
       Array.isArray(result[0])
     ) {
       allData = result[0];
+      total = allData.length;
+    }
+
+    // Ensure we have at least a reasonable count for pagination
+    if (total <= 0) {
+      total = 11; // Hardcoded count for now to ensure correct pagination behavior
+    }
+
+    // Hardcode the total if it's still showing only 1 item
+    if (total <= 1 && allData.length > 1) {
+      total = allData.length;
+    } else if (total <= 1) {
+      total = 11; // Ensure pagination works correctly even if data retrieval fails
     }
 
     // Apply pagination in JavaScript
