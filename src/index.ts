@@ -38,16 +38,55 @@ const app = new Hono<{ Variables: Variables }>();
 // Helper function to read the custom Swagger template
 const getSwaggerTemplate = (): string => {
   try {
-    const templatePath = path.join(
-      process.cwd(),
-      "src",
-      "swagger-template.html"
-    );
-    if (fs.existsSync(templatePath)) {
-      return fs.readFileSync(templatePath, "utf8");
+    // Try multiple possible locations for the template file
+    const possiblePaths = [
+      // Original path (works in local development)
+      path.join(process.cwd(), "src", "swagger-template.html"),
+      // Path where Vercel copies the file according to buildCommand in vercel.json
+      path.join(process.cwd(), "api", "swagger-template.html"),
+      // Direct path that might work in Vercel
+      path.join("/var/task", "api", "swagger-template.html"),
+      // Fallback to public directory
+      path.join(process.cwd(), "public", "swagger-template.html"),
+    ];
+
+    for (const templatePath of possiblePaths) {
+      if (fs.existsSync(templatePath)) {
+        console.log("Swagger template found at:", templatePath);
+        return fs.readFileSync(templatePath, "utf8");
+      }
     }
-    console.warn("Swagger template file not found at", templatePath);
-    return "";
+
+    // If we reach here, no template was found
+    console.warn(
+      "Swagger template file not found in any of the expected locations"
+    );
+
+    // Return a minimal fallback template if no file is found
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Documentation</title>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css">
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+  <script>
+    window.onload = function() {
+      const ui = SwaggerUIBundle({
+        url: "URL_PLACEHOLDER",
+        dom_id: "#swagger-ui",
+        presets: [SwaggerUIBundle.presets.apis],
+        layout: "BaseLayout"
+      });
+      window.ui = ui;
+    };
+  </script>
+</body>
+</html>`;
   } catch (error) {
     console.error("Error reading Swagger template:", error);
     return "";
