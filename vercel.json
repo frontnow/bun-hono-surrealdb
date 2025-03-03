@@ -19,10 +19,14 @@
     {
       "src": "api/index.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "src/swagger-template.html",
+      "use": "@vercel/static"
     }
   ],
   "regions": ["fra1"],
-  "buildCommand": "bun run build",
+  "buildCommand": "bun run build && cp src/swagger-template.html api/",
   "installCommand": "bun install",
   "public": true
 }
