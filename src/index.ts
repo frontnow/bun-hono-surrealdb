@@ -439,25 +439,25 @@ app.route("/api", api);
 // Create a middleware to inject our custom CSS
 app.use("/api/docs", async (c, next) => {
   await next();
-  
+
   // Only modify HTML responses
   if (c.res.headers.get("Content-Type")?.includes("text/html")) {
     // Get the original response HTML
     const html = await c.res.text();
-    
+
     // Insert our custom CSS link in the head
     const modifiedHtml = html.replace(
       "</head>",
       '<link rel="stylesheet" type="text/css" href="/swagger-custom.css">\n</head>'
     );
-    
+
     // Create a new response with the modified HTML
     return new Response(modifiedHtml, {
       status: c.res.status,
       headers: c.res.headers,
     });
   }
-  
+
   return c.res;
 });
 
@@ -493,7 +493,7 @@ export const OPTIONS = handler;
 
 // Start local server when not in production/Vercel environment
 if (process.env.VERCEL !== "1") {
-  const port = process.env.PORT || 3456;
+  const port = process.env.PORT || 3457;
   console.log(`🚀 Server running at http://localhost:${port}`);
 
   // Create and start the Bun server
