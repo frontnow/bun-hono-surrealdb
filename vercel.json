@@ -2,6 +2,10 @@
   "version": 2,
   "routes": [
     {
+      "src": "/swagger-custom.css",
+      "dest": "/public/swagger-custom.css"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/api/index.js",
       "headers": {
