@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { swaggerUI } from "@hono/swagger-ui";
 import { timing, setMetric, startTime, endTime } from "hono/timing";
 import type { TimingVariables } from "hono/timing";
@@ -29,7 +29,7 @@ export const runtime = "edge";
 // Type definitions for our app variables
 type Variables = TimingVariables;
 
-// Create the Hono app with OpenAPI support
+// Create the main Hono app
 const app = new Hono<{ Variables: Variables }>();
 
 // Custom fancy logger middleware
@@ -131,161 +131,11 @@ app.use(
 // Apply timing middleware
 app.use(timing());
 
-// API Routes with OpenAPI
+// Create an OpenAPI instance for the API
 const api = new OpenAPIHono();
 
-// Get all products with brand information (with pagination)
-api.openapi(
-  createRoute({
-    method: "get",
-    path: "/products",
-    tags: ["Products"],
-    summary: "Get a list of products",
-    description: "Retrieve a paginated list of products with brand information",
-    request: {
-      query: ProductListQuerySchema,
-    },
-    responses: {
-      200: {
-        description: "Successful response with paginated products",
-        content: {
-          "application/json": {
-            schema: ProductListResponseSchema,
-          },
-        },
-      },
-      500: {
-        description: "Server error",
-        content: {
-          "application/json": {
-            schema: ErrorResponseSchema,
-          },
-        },
-      },
-    },
-  }),
-  async (c) => {
-    try {
-      startTime(c, "get-products");
-
-      // Extract pagination parameters from query
-      const limitParam = c.req.query("limit");
-      const offsetParam = c.req.query("offset");
-
-      // Parse parameters (with fallback to undefined for optional pagination)
-      const limit = limitParam ? parseInt(limitParam, 10) : undefined;
-      const offset = offsetParam ? parseInt(offsetParam, 10) : undefined;
-
-      // Get paginated products
-      const { data: products, total } = await getProducts(limit, offset);
-      endTime(c, "get-products");
-
-      return c.json({
-        success: true,
-        data: products,
-        pagination: {
-          total,
-          limit,
-          offset,
-          hasMore:
-            limit !== undefined && total > 0
-              ? (offset || 0) + limit < total
-              : false,
-        },
-      });
-    } catch (error) {
-      return c.json(
-        {
-          success: false,
-          error: error instanceof Error ? error.message : String(error),
-        },
-        500
-      );
-    }
-  }
-);
-
-// Get product by ID
-api.openapi(
-  createRoute({
-    method: "get",
-    path: "/products/{id}",
-    tags: ["Products"],
-    summary: "Get a product by ID",
-    description: "Retrieve a single product by its unique identifier",
-    request: {
-      params: ProductPathParamsSchema,
-    },
-    responses: {
-      200: {
-        description: "Successful response with product details",
-        content: {
-          "application/json": {
-            schema: ProductResponseSchema,
-          },
-        },
-      },
-      404: {
-        description: "Product not found",
-        content: {
-          "application/json": {
-            schema: ErrorResponseSchema,
-          },
-        },
-      },
-      500: {
-        description: "Server error",
-        content: {
-          "application/json": {
-            schema: ErrorResponseSchema,
-          },
-        },
-      },
-    },
-  }),
-  async (c) => {
-    try {
-      const id = c.req.param("id");
-      startTime(c, "get-product");
-      const product = await getProductById(id);
-      endTime(c, "get-product");
-
-      if (!product) {
-        return c.json(
-          {
-            success: false,
-            error: "Product not found",
-          },
-          404
-        );
-      }
-
-      return c.json({
-        success: true,
-        data: product,
-      });
-    } catch (error) {
-      return c.json(
-        {
-          success: false,
-          error: error instanceof Error ? error.message : String(error),
-        },
-        500
-      );
-    }
-  }
-);
-
-// Add Swagger UI
-api.get(
-  "/docs",
-  swaggerUI({
-    url: "/api/docs/json",
-  })
-);
-
-// Serve OpenAPI documentation
-api.doc("/docs/json", {
+// Define the OpenAPI document
+const openAPIDocument = {
   openapi: "3.1.0",
   info: {
     title: "Product API",
@@ -298,6 +148,266 @@ api.doc("/docs/json", {
       description: "API endpoint",
     },
   ],
+};
+
+// Standard API routes
+// Get all products with brand information (with pagination)
+api.get("/products", async (c) => {
+  try {
+    startTime(c, "get-products");
+
+    // Extract pagination parameters from query
+    const limitParam = c.req.query("limit");
+    const offsetParam = c.req.query("offset");
+
+    // Parse parameters (with fallback to undefined for optional pagination)
+    const limit = limitParam ? parseInt(limitParam, 10) : undefined;
+    const offset = offsetParam ? parseInt(offsetParam, 10) : undefined;
+
+    // Get paginated products
+    const { data: products, total } = await getProducts(limit, offset);
+    endTime(c, "get-products");
+
+    return c.json({
+      success: true,
+      data: products,
+      pagination: {
+        total,
+        limit,
+        offset,
+        hasMore:
+          limit !== undefined && total > 0
+            ? (offset || 0) + limit < total
+            : false,
+      },
+    });
+  } catch (error) {
+    return c.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      },
+      500
+    );
+  }
+});
+
+// Get product by ID
+api.get("/products/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    startTime(c, "get-product");
+    const product = await getProductById(id);
+    endTime(c, "get-product");
+
+    if (!product) {
+      return c.json(
+        {
+          success: false,
+          error: "Product not found",
+        },
+        404
+      );
+    }
+
+    return c.json({
+      success: true,
+      data: product,
+    });
+  } catch (error) {
+    return c.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      },
+      500
+    );
+  }
+});
+
+// Add Swagger UI
+api.get(
+  "/docs",
+  swaggerUI({
+    url: "/api/docs/json",
+  })
+);
+
+// Serve OpenAPI documentation
+api.get("/docs/json", (c) => {
+  // Define API paths
+  const paths = {
+    "/products": {
+      get: {
+        tags: ["Products"],
+        summary: "Get a list of products",
+        description:
+          "Retrieve a paginated list of products with brand information",
+        parameters: [
+          {
+            name: "limit",
+            in: "query",
+            description: "Number of items to return per page",
+            required: false,
+            schema: { type: "string" },
+          },
+          {
+            name: "offset",
+            in: "query",
+            description: "Starting position for pagination",
+            required: false,
+            schema: { type: "string" },
+          },
+        ],
+        responses: {
+          "200": {
+            description: "Successful response with paginated products",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean" },
+                    data: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          id: { type: "string" },
+                          name: { type: "string" },
+                          description: { type: "string" },
+                          price: { type: "number" },
+                          brands: {
+                            type: "array",
+                            items: {
+                              type: "object",
+                              properties: {
+                                id: { type: "string" },
+                                name: { type: "string" },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                    pagination: {
+                      type: "object",
+                      properties: {
+                        total: { type: "number" },
+                        limit: { type: "number", nullable: true },
+                        offset: { type: "number", nullable: true },
+                        hasMore: { type: "boolean" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          "500": {
+            description: "Server error",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", enum: [false] },
+                    error: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/products/{id}": {
+      get: {
+        tags: ["Products"],
+        summary: "Get a product by ID",
+        description: "Retrieve a single product by its unique identifier",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            description: "Product ID",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
+        responses: {
+          "200": {
+            description: "Successful response with product details",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean" },
+                    data: {
+                      type: "object",
+                      properties: {
+                        id: { type: "string" },
+                        name: { type: "string" },
+                        description: { type: "string" },
+                        price: { type: "number" },
+                        brands: {
+                          type: "array",
+                          items: {
+                            type: "object",
+                            properties: {
+                              id: { type: "string" },
+                              name: { type: "string" },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          "404": {
+            description: "Product not found",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", enum: [false] },
+                    error: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+          "500": {
+            description: "Server error",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", enum: [false] },
+                    error: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+
+  // Combine with base OpenAPI document
+  const fullDoc = {
+    ...openAPIDocument,
+    paths,
+  };
+
+  return c.json(fullDoc);
 });
 
 // Mount the API under /api
