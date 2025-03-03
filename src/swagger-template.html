@@ -6,22 +6,15 @@
   <title>API Documentation</title>
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css">
   <style>
-    /* Modern, clean styling inspired by Shadcn UI */
+    /* Minimal black and white styling inspired by shadcn UI */
     :root {
       --background: #ffffff;
       --foreground: #09090b;
-      --muted: #f4f4f5;
-      --muted-foreground: #71717a;
-      --primary: #18181b;
-      --primary-foreground: #ffffff;
-      --secondary: #f4f4f5;
-      --secondary-foreground: #18181b;
-      --accent: #f4f4f5;
-      --accent-foreground: #18181b;
-      --destructive: #ef4444;
-      --destructive-foreground: #fafafa;
-      --border: #e4e4e7;
-      --radius: 0.5rem;
+      --muted: #f3f4f6;
+      --muted-foreground: #6b7280;
+      --border: #e5e7eb;
+      --ring: #000000;
+      --radius: 0.375rem;
     }
 
     body {
@@ -33,26 +26,25 @@
       line-height: 1.5;
     }
 
-    /* Hide the default Swagger UI header completely */
+    /* Hide the default Swagger UI header */
     .swagger-ui .topbar {
       display: none !important;
     }
 
-    /* Clean, modern header */
+    /* Clean, minimal header */
     .api-header {
-      background-color: var(--primary);
-      color: var(--primary-foreground);
-      padding: 1rem 2rem;
+      background-color: #000000;
+      color: #ffffff;
+      padding: 0.75rem 1.5rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .api-header h1 {
       margin: 0;
-      font-size: 1.25rem;
-      font-weight: 600;
+      font-size: 1rem;
+      font-weight: 500;
       letter-spacing: -0.025em;
     }
     
@@ -62,14 +54,11 @@
     }
     
     .api-header .links a {
-      color: var(--primary-foreground);
+      color: #ffffff;
       text-decoration: none;
       font-size: 0.875rem;
       opacity: 0.85;
       transition: opacity 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
     }
     
     .api-header .links a:hover {
@@ -106,7 +95,7 @@
     .swagger-ui .opblock {
       margin: 0 0 1rem;
       border-radius: var(--radius);
-      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+      box-shadow: none;
       border: 1px solid var(--border);
       background-color: var(--background);
       overflow: hidden;
@@ -114,47 +103,37 @@
 
     .swagger-ui .opblock .opblock-summary {
       padding: 0.75rem 1rem;
-      border-radius: var(--radius) var(--radius) 0 0;
       border-bottom: 1px solid var(--border);
     }
 
+    /* Monochromatic method badges */
     .swagger-ui .opblock .opblock-summary-method {
       border-radius: 0.25rem;
-      font-weight: 600;
+      font-weight: 500;
       font-size: 0.75rem;
       padding: 0.25rem 0.5rem;
+      background-color: #000000;
+      color: #ffffff;
     }
 
-    /* Method colors */
-    .swagger-ui .opblock.opblock-get .opblock-summary-method {
-      background-color: #3b82f6;
-    }
-
-    .swagger-ui .opblock.opblock-post .opblock-summary-method {
-      background-color: #10b981;
-    }
-
-    .swagger-ui .opblock.opblock-delete .opblock-summary-method {
-      background-color: #ef4444;
-    }
-
-    .swagger-ui .opblock.opblock-put .opblock-summary-method {
-      background-color: #f59e0b;
-    }
-
+    /* Remove all color varieties from methods */
+    .swagger-ui .opblock.opblock-get .opblock-summary-method,
+    .swagger-ui .opblock.opblock-post .opblock-summary-method,
+    .swagger-ui .opblock.opblock-delete .opblock-summary-method,
+    .swagger-ui .opblock.opblock-put .opblock-summary-method,
     .swagger-ui .opblock.opblock-patch .opblock-summary-method {
-      background-color: #8b5cf6;
+      background-color: #000000;
     }
 
     /* Path typography */
     .swagger-ui .opblock .opblock-summary-path {
-      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       font-size: 0.875rem;
       display: flex;
       align-items: center;
     }
 
-    /* Remove border from all opblocks */
+    /* Remove border colors from all operation blocks */
     .swagger-ui .opblock.opblock-get,
     .swagger-ui .opblock.opblock-post,
     .swagger-ui .opblock.opblock-delete,
@@ -194,17 +173,18 @@
     }
 
     .swagger-ui .btn.execute {
-      background-color: var(--primary);
-      color: var(--primary-foreground);
-      border-color: var(--primary);
+      background-color: #000000;
+      color: #ffffff;
+      border-color: #000000;
     }
 
     .swagger-ui .btn.cancel {
-      background-color: var(--secondary);
-      color: var(--secondary-foreground);
+      background-color: var(--muted);
+      color: var(--foreground);
+      border-color: var(--border);
     }
 
-    /* Inputs */
+    /* Form controls */
     .swagger-ui input[type=text], 
     .swagger-ui input[type=password], 
     .swagger-ui input[type=search], 
@@ -283,7 +263,7 @@
       margin: 0;
     }
     
-    /* Clean up models section */
+    /* Models section */
     .swagger-ui section.models {
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -346,19 +326,57 @@
       font-size: 0.8125rem;
     }
 
-    /* Clean schema display */
+    /* Schema display */
     .swagger-ui .model-box {
       background-color: var(--background);
       border-radius: var(--radius);
       margin-top: 0.5rem;
     }
-
-    /* Expand/collapse icon */
-    .swagger-ui .model-toggle:after {
+    
+    /* Clean up interactive elements */
+    .swagger-ui input[type=checkbox] {
+      margin-right: 0.5rem;
+    }
+    
+    /* Simplify authorize section */
+    .swagger-ui .dialog-ux .modal-ux {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .swagger-ui .dialog-ux .modal-ux-header {
       background-color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .swagger-ui .dialog-ux .modal-ux-header h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+    
+    /* Clean up tabs in models */
+    .swagger-ui .tab li {
+      padding: 0.5rem 1rem;
+    }
+    
+    /* Remove color from model containers */
+    .swagger-ui .model-container {
+      background-color: #ffffff;
+    }
+    
+    /* Clean up model toggle button */
+    .swagger-ui .model-box .model-toggle {
+      background-color: transparent;
+      border: none;
+    }
+    
+    /* Harmonize selection colors */
+    ::selection {
+      background-color: rgba(0, 0, 0, 0.1);
     }
   </style>
-  <link rel="icon" type="image/png" href="https://unpkg.com/swagger-ui-dist@5.9.0/favicon-32x32.png" sizes="32x32" />
 </head>
 <body>
   <div class="api-header">
@@ -377,13 +395,13 @@
   <script>
     window.onload = function() {
       const ui = SwaggerUIBundle({
-        url: "URL_PLACEHOLDER", // This will be replaced by the swaggerUI middleware
+        url: "URL_PLACEHOLDER", // This will be replaced by the middleware
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [
           SwaggerUIBundle.presets.apis
         ],
-        layout: "BaseLayout", // Use BaseLayout instead of StandaloneLayout to remove the duplicated header
+        layout: "BaseLayout", // Use BaseLayout to remove duplicate header
         defaultModelsExpandDepth: 1,
         defaultModelExpandDepth: 1,
         defaultModelRendering: 'model',
