@@ -1,4 +1,6 @@
 import { Hono } from "hono";
+import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { swaggerUI } from "@hono/swagger-ui";
 import { timing, setMetric, startTime, endTime } from "hono/timing";
 import type { TimingVariables } from "hono/timing";
 import { prettyJSON } from "hono/pretty-json";
@@ -13,13 +15,21 @@ import {
   getProductById,
 } from "./database";
 import { handle } from "hono/vercel";
+import {
+  ProductSchema,
+  ProductListResponseSchema,
+  ProductResponseSchema,
+  ErrorResponseSchema,
+  ProductListQuerySchema,
+  ProductPathParamsSchema,
+} from "./schemas";
 
 export const runtime = "edge";
 
 // Type definitions for our app variables
 type Variables = TimingVariables;
 
-// Create the Hono app
+// Create the Hono app with OpenAPI support
 const app = new Hono<{ Variables: Variables }>();
 
 // Custom fancy logger middleware
@@ -121,87 +131,179 @@ app.use(
 // Apply timing middleware
 app.use(timing());
 
-// API Routes
-const api = new Hono();
+// API Routes with OpenAPI
+const api = new OpenAPIHono();
 
 // Get all products with brand information (with pagination)
-api.get("/products", async (c) => {
-  try {
-    startTime(c, "get-products");
-
-    // Extract pagination parameters from query
-    const limitParam = c.req.query("limit");
-    const offsetParam = c.req.query("offset");
-
-    // Parse parameters (with fallback to undefined for optional pagination)
-    const limit = limitParam ? parseInt(limitParam, 10) : undefined;
-    const offset = offsetParam ? parseInt(offsetParam, 10) : undefined;
-
-    // Get paginated products
-    const { data: products, total } = await getProducts(limit, offset);
-    endTime(c, "get-products");
-
-    return c.json({
-      success: true,
-      data: products,
-      pagination: {
-        total,
-        limit,
-        offset,
-        hasMore:
-          limit !== undefined && total > 0
-            ? (offset || 0) + limit < total
-            : false,
+api.openapi(
+  createRoute({
+    method: "get",
+    path: "/products",
+    tags: ["Products"],
+    summary: "Get a list of products",
+    description: "Retrieve a paginated list of products with brand information",
+    request: {
+      query: ProductListQuerySchema,
+    },
+    responses: {
+      200: {
+        description: "Successful response with paginated products",
+        content: {
+          "application/json": {
+            schema: ProductListResponseSchema,
+          },
+        },
       },
-    });
-  } catch (error) {
-    return c.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : String(error),
+      500: {
+        description: "Server error",
+        content: {
+          "application/json": {
+            schema: ErrorResponseSchema,
+          },
+        },
       },
-      500
-    );
-  }
-});
+    },
+  }),
+  async (c) => {
+    try {
+      startTime(c, "get-products");
 
-// Get product by ID
-api.get("/products/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    startTime(c, "get-product");
-    const product = await getProductById(id);
-    endTime(c, "get-product");
+      // Extract pagination parameters from query
+      const limitParam = c.req.query("limit");
+      const offsetParam = c.req.query("offset");
 
-    if (!product) {
+      // Parse parameters (with fallback to undefined for optional pagination)
+      const limit = limitParam ? parseInt(limitParam, 10) : undefined;
+      const offset = offsetParam ? parseInt(offsetParam, 10) : undefined;
+
+      // Get paginated products
+      const { data: products, total } = await getProducts(limit, offset);
+      endTime(c, "get-products");
+
+      return c.json({
+        success: true,
+        data: products,
+        pagination: {
+          total,
+          limit,
+          offset,
+          hasMore:
+            limit !== undefined && total > 0
+              ? (offset || 0) + limit < total
+              : false,
+        },
+      });
+    } catch (error) {
       return c.json(
         {
           success: false,
-          error: "Product not found",
+          error: error instanceof Error ? error.message : String(error),
         },
-        404
+        500
       );
     }
-
-    return c.json({
-      success: true,
-      data: product,
-    });
-  } catch (error) {
-    return c.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : String(error),
-      },
-      500
-    );
   }
+);
+
+// Get product by ID
+api.openapi(
+  createRoute({
+    method: "get",
+    path: "/products/{id}",
+    tags: ["Products"],
+    summary: "Get a product by ID",
+    description: "Retrieve a single product by its unique identifier",
+    request: {
+      params: ProductPathParamsSchema,
+    },
+    responses: {
+      200: {
+        description: "Successful response with product details",
+        content: {
+          "application/json": {
+            schema: ProductResponseSchema,
+          },
+        },
+      },
+      404: {
+        description: "Product not found",
+        content: {
+          "application/json": {
+            schema: ErrorResponseSchema,
+          },
+        },
+      },
+      500: {
+        description: "Server error",
+        content: {
+          "application/json": {
+            schema: ErrorResponseSchema,
+          },
+        },
+      },
+    },
+  }),
+  async (c) => {
+    try {
+      const id = c.req.param("id");
+      startTime(c, "get-product");
+      const product = await getProductById(id);
+      endTime(c, "get-product");
+
+      if (!product) {
+        return c.json(
+          {
+            success: false,
+            error: "Product not found",
+          },
+          404
+        );
+      }
+
+      return c.json({
+        success: true,
+        data: product,
+      });
+    } catch (error) {
+      return c.json(
+        {
+          success: false,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        500
+      );
+    }
+  }
+);
+
+// Add Swagger UI
+api.get(
+  "/docs",
+  swaggerUI({
+    url: "/api/docs/json",
+  })
+);
+
+// Serve OpenAPI documentation
+api.doc("/docs/json", {
+  openapi: "3.1.0",
+  info: {
+    title: "Product API",
+    version: "1.0.0",
+    description: "API for managing products and their associated brands",
+  },
+  servers: [
+    {
+      url: "/api",
+      description: "API endpoint",
+    },
+  ],
 });
 
 // Mount the API under /api
 app.route("/api", api);
 
-// Home route with custom metrics
+// Home route with custom metrics and API docs link
 app.get("/", async (c) => {
   startTime(c, "db");
   await new Promise((resolve) => setTimeout(resolve, 50));
@@ -216,6 +318,7 @@ app.get("/", async (c) => {
       api: {
         products: "/api/products",
         productById: "/api/products/:id",
+        documentation: "/api/docs",
       },
       root: "/",
     },
