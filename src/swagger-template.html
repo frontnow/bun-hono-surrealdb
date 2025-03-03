@@ -177,19 +177,39 @@
         background: var(--background) !important;
       }
 
-      /* Remove blue color from tabs and buttons */
-      .swagger-ui .tab li,
+      /* Remove ALL colors from tabs including the blue bottom line */
+      .swagger-ui .tab,
+      .swagger-ui .tab li, 
       .swagger-ui .tab li:after,
       .swagger-ui .tab li.active,
-      .swagger-ui .tab li:after {
+      .swagger-ui .tab li.active:after,
+      .swagger-ui .tabitem,
+      .swagger-ui .tabitem.active,
+      .swagger-ui .tab-header .tab-item,
+      .swagger-ui .tab-header .tab-item.active,
+      .swagger-ui .tab-header .tab-item::after,
+      .swagger-ui .tab-header .tab-item.active::after {
         background: var(--muted) !important;
         color: var(--foreground) !important;
         border-color: var(--border) !important;
+        border-bottom-color: var(--border) !important;
       }
-
-      .swagger-ui .tab li.active {
+      
+      /* Active tab styles with no colors */
+      .swagger-ui .tab li.active,
+      .swagger-ui .tab-header .tab-item.active {
         background: var(--background) !important;
         font-weight: 600;
+        border-bottom: 1px solid var(--border) !important;
+      }
+      
+      /* Important: disable the blue bottom border completely */
+      .swagger-ui .tab li::after,
+      .swagger-ui .tab li.active::after,
+      .swagger-ui .tab-header .tab-item::after,
+      .swagger-ui .tab-header .tab-item.active::after {
+        height: 0 !important;
+        background: transparent !important;
       }
 
       /* Path typography */
@@ -617,13 +637,31 @@
         color: var(--foreground) !important;
       }
 
-      /* Override icons and svg elements */
-      .swagger-ui svg path {
-        fill: var(--foreground) !important;
+      /* Fix ALL SVG elements with monochrome */
+      .swagger-ui svg,
+      .swagger-ui svg path,
+      .swagger-ui svg rect,
+      .swagger-ui svg circle,
+      .swagger-ui svg line,
+      .swagger-ui svg polygon,
+      .swagger-ui .arrow,
+      .swagger-ui .model-toggle,
+      .swagger-ui .expand-operation svg,
+      .swagger-ui .opblock-control-arrow {
+        fill: currentColor !important;
+        stroke: currentColor !important;
+        color: var(--foreground) !important;
       }
-
-      .swagger-ui .expand-operation svg {
+      
+      /* All icons need to be monochrome */
+      .swagger-ui *[class*="icon"],
+      .swagger-ui .svg-assets,
+      .swagger-ui .expand-methods svg,
+      .swagger-ui .arrow,
+      .swagger-ui button svg {
         fill: var(--foreground) !important;
+        color: var(--foreground) !important;
+        background: transparent !important;
       }
 
       /* Filter box */
@@ -673,9 +711,23 @@
         border-color: var(--border) !important;
       }
 
-      /* More consistent spacing for better readability */
-      .swagger-ui .opblock-body {
-        padding: 0.5rem 1rem;
+      /* Simplify opblock description wrapper */
+      .swagger-ui .opblock-description-wrapper {
+        padding: 0.75rem 1rem !important;
+        margin: 0 !important;
+        background: var(--background) !important;
+        border-bottom: 1px solid var(--border) !important;
+      }
+      
+      /* Remove excessive backgrounds */
+      .swagger-ui .opblock-description-wrapper div,
+      .swagger-ui .opblock-description-wrapper p,
+      .swagger-ui .opblock-external-docs-wrapper,
+      .swagger-ui .renderedMarkdown {
+        background: transparent !important;
+        padding: 0 !important;
+        margin-bottom: 0.5rem !important;
+        border: none !important;
       }
 
       /* Blues in forms and UI */
@@ -733,11 +785,6 @@
       .swagger-ui .model .property {
         color: var(--foreground) !important;
         font-size: 0.8rem;
-      }
-
-      /* Simple styles for better readability */
-      .swagger-ui .opblock-description-wrapper {
-        padding: 0.5rem 0;
       }
 
       /* Section headers */
