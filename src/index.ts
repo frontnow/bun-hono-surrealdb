@@ -26,8 +26,16 @@ import {
   ProductListQuerySchema,
   ProductPathParamsSchema,
 } from "./schemas";
+
 export const runtime = "edge";
-// Serve static files from the public directory
+
+// Type definitions for our app variables
+type Variables = TimingVariables;
+
+// Create the main Hono app
+const app = new Hono<{ Variables: Variables }>();
+
+// Serve static CSS file
 app.use("/swagger-custom.css", async (c) => {
   try {
     // Try to read the CSS file
@@ -46,11 +54,6 @@ app.use("/swagger-custom.css", async (c) => {
     return c.notFound();
   }
 });
-// Type definitions for our app variables
-type Variables = TimingVariables;
-
-// Create the main Hono app
-const app = new Hono<{ Variables: Variables }>();
 
 // Custom fancy logger middleware
 const fancyLogger = (): MiddlewareHandler => {
@@ -250,7 +253,6 @@ api.get(
   "/docs",
   swaggerUI({
     url: "/api/docs/json",
-    // Custom CSS can be included via link tag in the default Swagger UI template
   })
 );
 
@@ -437,25 +439,25 @@ app.route("/api", api);
 // Create a middleware to inject our custom CSS
 app.use("/api/docs", async (c, next) => {
   await next();
-
+  
   // Only modify HTML responses
   if (c.res.headers.get("Content-Type")?.includes("text/html")) {
     // Get the original response HTML
     const html = await c.res.text();
-
+    
     // Insert our custom CSS link in the head
     const modifiedHtml = html.replace(
       "</head>",
       '<link rel="stylesheet" type="text/css" href="/swagger-custom.css">\n</head>'
     );
-
+    
     // Create a new response with the modified HTML
     return new Response(modifiedHtml, {
       status: c.res.status,
       headers: c.res.headers,
     });
   }
-
+  
   return c.res;
 });
 
