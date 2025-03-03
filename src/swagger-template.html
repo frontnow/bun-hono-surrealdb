@@ -98,15 +98,20 @@
         padding-bottom: 1.5rem;
       }
 
-      /* Override version badges with monochrome styling */
+      /* Clean version badges styling */
       .swagger-ui .info .title span,
-      .swagger-ui .info .title small {
-        background-color: var(--muted) !important;
+      .swagger-ui .info .title small,
+      .swagger-ui .version-pragma {
+        background-color: #ffffff !important;
         color: var(--foreground) !important;
-        border: 1px solid var(--border-strong);
+        border: 1px solid var(--border);
         font-size: 0.7rem;
         font-weight: 400;
         margin-left: 0.5rem;
+        border-radius: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        position: relative;
+        top: -0.15rem;
       }
 
       /* Operations */
@@ -177,8 +182,9 @@
         background: var(--background) !important;
       }
 
-      /* Remove ALL colors from tabs including the blue bottom line */
+      /* Super aggressive tab styling - remove all colors */
       .swagger-ui .tab,
+      .swagger-ui .tab ul,
       .swagger-ui .tab li, 
       .swagger-ui .tab li:after,
       .swagger-ui .tab li.active,
@@ -188,28 +194,82 @@
       .swagger-ui .tab-header .tab-item,
       .swagger-ui .tab-header .tab-item.active,
       .swagger-ui .tab-header .tab-item::after,
-      .swagger-ui .tab-header .tab-item.active::after {
+      .swagger-ui .tab-header .tab-item.active::after,
+      .swagger-ui .opblock-tag span:after,
+      .swagger-ui .tab li:hover:after,
+      .swagger-ui .tab-header:after,
+      .swagger-ui .parameters-container .tabs-header .tab span:after,
+      /* Target ALL active indicators */
+      .swagger-ui .parameters-container .tab-header .tabs-menu li::after,
+      .swagger-ui .parameters-container .tab-header .tabs-menu li.active::after,
+      .swagger-ui .parameters-container .tab-header .tabs-menu.active::after,
+      .swagger-ui .parameters-container .tab-header .tabs-menu li,
+      .swagger-ui section.models .model-container .tabs .operation-tag-content-wrapper,
+      .swagger-ui .parameters-tabs-headers .tab-header,
+      .swagger-ui .parameters-tabs-headers .tab-header .tabs-menu.menu-item,
+      .swagger-ui .parameters-tabs-headers .tab-header .tabs-menu.menu-item.active,
+      .swagger-ui .parameters-tabs-headers .tab-header .tabs-menu.menu-item.active:after {
         background: var(--muted) !important;
         color: var(--foreground) !important;
         border-color: var(--border) !important;
-        border-bottom-color: var(--border) !important;
       }
-      
-      /* Active tab styles with no colors */
+
+      /* Specifically target active tab styles - NO COLORS */
       .swagger-ui .tab li.active,
-      .swagger-ui .tab-header .tab-item.active {
+      .swagger-ui .tab-header .tab-item.active,
+      .swagger-ui .parameters-container .tab-header .tabs-menu li.active,
+      .swagger-ui
+        .parameters-tabs-headers
+        .tab-header
+        .tabs-menu.menu-item.active {
         background: var(--background) !important;
         font-weight: 600;
         border-bottom: 1px solid var(--border) !important;
       }
-      
-      /* Important: disable the blue bottom border completely */
+
+      /* COMPLETELY REMOVE tab indicator animations and colors */
       .swagger-ui .tab li::after,
       .swagger-ui .tab li.active::after,
       .swagger-ui .tab-header .tab-item::after,
-      .swagger-ui .tab-header .tab-item.active::after {
+      .swagger-ui .tab-header .tab-item.active::after,
+      .swagger-ui .parameters-container .tab-header .tabs-menu li::after,
+      .swagger-ui .parameters-container .tab-header .tabs-menu li.active::after,
+      .swagger-ui
+        .parameters-tabs-headers
+        .tab-header
+        .tabs-menu.menu-item::after,
+      .swagger-ui
+        .parameters-tabs-headers
+        .tab-header
+        .tabs-menu.menu-item.active::after,
+      .swagger-ui .opblock-tag span:after,
+      .swagger-ui .parameters-tabs-headers .tabs-menu-item.active:after,
+      .swagger-ui .parameters-tabs-headers .tabs-menu-item:after {
+        display: none !important;
         height: 0 !important;
+        width: 0 !important;
         background: transparent !important;
+        border: none !important;
+        opacity: 0 !important;
+      }
+
+      /* Simplify tab bar layout */
+      .swagger-ui
+        .parameters-container
+        .parameters-col_description
+        .parameter__inner,
+      .swagger-ui
+        .parameters-container
+        .parameters-col_description
+        .parameter__info,
+      .swagger-ui .parameters-container .parameters {
+        background: var(--background) !important;
+        border: none !important;
+      }
+
+      /* Fix tabs and tab content */
+      .swagger-ui .operation-tag-content > div {
+        background: var(--background) !important;
       }
 
       /* Path typography */
@@ -652,7 +712,7 @@
         stroke: currentColor !important;
         color: var(--foreground) !important;
       }
-      
+
       /* All icons need to be monochrome */
       .swagger-ui *[class*="icon"],
       .swagger-ui .svg-assets,
@@ -718,7 +778,7 @@
         background: var(--background) !important;
         border-bottom: 1px solid var(--border) !important;
       }
-      
+
       /* Remove excessive backgrounds */
       .swagger-ui .opblock-description-wrapper div,
       .swagger-ui .opblock-description-wrapper p,
