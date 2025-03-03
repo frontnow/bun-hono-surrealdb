@@ -38,15 +38,17 @@ const app = new Hono<{ Variables: Variables }>();
 // Helper function to read the custom Swagger template
 const getSwaggerTemplate = (): string => {
   try {
-    // Try multiple possible locations for the template file
+    // Try multiple possible locations for the template file, prioritizing the src version
+    // which has inline styles and doesn't depend on external CSS
     const possiblePaths = [
-      // Original path (works in local development)
+      // Original path - src version with inline styles (priority)
       path.join(process.cwd(), "src", "swagger-template.html"),
       // Path where Vercel copies the file according to buildCommand in vercel.json
       path.join(process.cwd(), "api", "swagger-template.html"),
       // Direct path that might work in Vercel
       path.join("/var/task", "api", "swagger-template.html"),
-      // Fallback to public directory
+      path.join("/var/task", "src", "swagger-template.html"),
+      // Fallback to public directory (this version needs external CSS)
       path.join(process.cwd(), "public", "swagger-template.html"),
     ];
 
