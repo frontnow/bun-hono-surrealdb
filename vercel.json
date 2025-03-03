@@ -1,18 +1,21 @@
 {
-  "redirects": [
+  "version": 2,
+  "builds": [
     {
-      "destination": "/api",
-      "permanent": false,
-      "source": "/"
+      "src": "api/index.js",
+      "use": "@vercel/node"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.js"
     }
   ],
-  "buildCommand": "bun run build",
   "headers": [
     {
       "source": "/api/(.*)",
