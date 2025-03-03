@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product API Documentation - Shadcn Style</title>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css">
+  <link rel="stylesheet" type="text/css" href="/swagger-custom.css">
+  <link rel="icon" type="image/png" href="https://unpkg.com/swagger-ui-dist@5.9.0/favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="https://unpkg.com/swagger-ui-dist@5.9.0/favicon-16x16.png" sizes="16x16" />
+  <style>
+    /* Additional inline styles for header and layout */
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    .custom-header {
+      background-color: #18181b;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .custom-header h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .custom-header .links {
+      display: flex;
+      gap: 1rem;
+    }
+    .custom-header .links a {
+      color: white;
+      text-decoration: none;
+      font-size: 0.875rem;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+    .custom-header .links a:hover {
+      opacity: 1;
+    }
+    .content-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0;
+    }
+    .swagger-ui .info {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="custom-header">
+    <h1>Product API Documentation</h1>
+    <div class="links">
+      <a href="/api/products" target="_blank">API</a>
+      <a href="https://github.com/frontnow/bun-hono-surrealdb" target="_blank">GitHub</a>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div id="swagger-ui"></div>
+  </div>
+
+  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = function() {
+      // Begin Swagger UI call region
+      const ui = SwaggerUIBundle({
+        url: "__URL__", // This will be replaced by the swaggerUI middleware
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout",
+        supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+        tagsSorter: 'alpha'
+      });
+      // End Swagger UI call region
+      window.ui = ui;
+    };
+  </script>
+</body>
+</html>
