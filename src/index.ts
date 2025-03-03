@@ -148,7 +148,10 @@ api.get("/products", async (c) => {
         total,
         limit,
         offset,
-        hasMore: limit !== undefined ? (offset || 0) + limit < total : false,
+        hasMore:
+          limit !== undefined && total > 0
+            ? (offset || 0) + limit < total
+            : false,
       },
     });
   } catch (error) {
