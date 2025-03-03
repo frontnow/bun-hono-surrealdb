@@ -119,6 +119,14 @@
         overflow: hidden;
       }
 
+      /* Remove excess borders */
+      .swagger-ui .opblock-description-wrapper,
+      .swagger-ui .opblock-external-docs-wrapper,
+      .swagger-ui .opblock-title_normal {
+        border: none !important;
+        background: none !important;
+      }
+
       .swagger-ui .opblock .opblock-summary {
         padding: 0.75rem 1rem;
         border-bottom: 1px solid var(--border);
@@ -153,9 +161,35 @@
         border-color: var(--border) !important;
       }
 
-      /* Make borders lighter */
+      /* Make borders lighter and backgrounds consistent */
       .swagger-ui * {
         border-color: var(--border) !important;
+      }
+
+      /* Simplify all UI containers by removing background colors */
+      .swagger-ui .parameters-container,
+      .swagger-ui .opblock-section-header,
+      .swagger-ui .tab-container,
+      .swagger-ui .response-container,
+      .swagger-ui .model-container,
+      .swagger-ui .model-box,
+      .swagger-ui .servers-container {
+        background: var(--background) !important;
+      }
+
+      /* Remove blue color from tabs and buttons */
+      .swagger-ui .tab li,
+      .swagger-ui .tab li:after,
+      .swagger-ui .tab li.active,
+      .swagger-ui .tab li:after {
+        background: var(--muted) !important;
+        color: var(--foreground) !important;
+        border-color: var(--border) !important;
+      }
+
+      .swagger-ui .tab li.active {
+        background: var(--background) !important;
+        font-weight: 600;
       }
 
       /* Path typography */
@@ -436,21 +470,77 @@
         color: #333333 !important;
       }
 
-      /* Force override inline styles (important!) */
+      /* Force override ALL inline styles (important!) */
       .swagger-ui .microlight span,
       .swagger-ui .microlight span[style],
       .swagger-ui .curl-command span,
       .swagger-ui pre span,
       .swagger-ui .highlight-code span,
-      .swagger-ui [class*="microlight"] span {
+      .swagger-ui [class*="microlight"] span,
+      /* Target all styled elements */
+      .swagger-ui *[style*="color"],
+      .swagger-ui *[style*="background"],
+      /* Target specific blue elements */
+      .swagger-ui .tabitem.active,
+      .swagger-ui .tabitem,
+      .swagger-ui select,
+      .swagger-ui button,
+      .swagger-ui .tab-header,
+      .swagger-ui .tab-item,
+      .swagger-ui .parameter__name,
+      .swagger-ui table *,
+      .swagger-ui a,
+      .swagger-ui .servers,
+      .swagger-ui .download-url-wrapper,
+      .swagger-ui .opblock-control-arrow,
+      .swagger-ui input {
         color: #333333 !important;
+        background: transparent !important;
+        border-color: var(--border) !important;
+      }
+
+      /* ALL links colorless */
+      .swagger-ui a,
+      .swagger-ui a:visited,
+      .swagger-ui a:hover,
+      .swagger-ui a:active {
+        color: #333333 !important;
+        text-decoration: underline !important;
+      }
+
+      /* Remove all borders except where structurally needed */
+      .swagger-ui .wrapper,
+      .swagger-ui .information-container,
+      .swagger-ui .scheme-container,
+      .swagger-ui .auth-wrapper,
+      .swagger-ui .models,
+      .swagger-ui .opblock-tag-section {
+        box-shadow: none !important;
         background: transparent !important;
       }
 
-      /* Targeted override for common syntax elements with inline styles */
-      .swagger-ui [style*="color"],
-      .swagger-ui [style*="color:"] {
-        color: #333333 !important;
+      /* Simplify tables */
+      .swagger-ui table thead tr {
+        background: var(--muted) !important;
+        color: var(--foreground) !important;
+      }
+
+      .swagger-ui table,
+      .swagger-ui table tr,
+      .swagger-ui table td {
+        background: var(--background) !important;
+        color: var(--foreground) !important;
+      }
+
+      /* Reduce spacing */
+      .swagger-ui .wrapper {
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      /* Clean up parameter structure */
+      .swagger-ui .parameters-col_description {
+        border-top: none !important;
       }
 
       /* Override specific console colors */
@@ -583,9 +673,35 @@
         border-color: var(--border) !important;
       }
 
-      /* More spacing for better readability */
+      /* More consistent spacing for better readability */
       .swagger-ui .opblock-body {
         padding: 0.5rem 1rem;
+      }
+
+      /* Blues in forms and UI */
+      .swagger-ui input[type="text"],
+      .swagger-ui input[type="password"],
+      .swagger-ui input[type="search"],
+      .swagger-ui input[type="email"],
+      .swagger-ui textarea {
+        border: 1px solid var(--border) !important;
+        background: var(--background) !important;
+        color: var(--foreground) !important;
+        box-shadow: none !important;
+      }
+
+      /* Blue focus states */
+      .swagger-ui *:focus,
+      .swagger-ui *:focus-within,
+      .swagger-ui *:active {
+        outline-color: #000000 !important;
+        border-color: #000000 !important;
+        box-shadow: none !important;
+      }
+
+      /* Fix tabs and buttons with blue */
+      .swagger-ui .tab {
+        background: transparent !important;
       }
 
       /* Response section */
