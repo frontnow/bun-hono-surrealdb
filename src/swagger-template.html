@@ -425,12 +425,60 @@
         color: #333333 !important;
       }
 
-      /* JSON specific styling */
+      /* JSON specific styling - aggressively override any colors */
       .swagger-ui .curl-command,
       .swagger-ui .curl-command .microlight,
-      .swagger-ui .response-col_description__inner .microlight {
+      .swagger-ui .response-col_description__inner .microlight,
+      .swagger-ui .opblock-body pre,
+      .swagger-ui .example pre,
+      .swagger-ui .model-example pre {
         background-color: #fafafa !important;
         color: #333333 !important;
+      }
+
+      /* Force override inline styles (important!) */
+      .swagger-ui .microlight span,
+      .swagger-ui .microlight span[style],
+      .swagger-ui .curl-command span,
+      .swagger-ui pre span,
+      .swagger-ui .highlight-code span,
+      .swagger-ui [class*="microlight"] span {
+        color: #333333 !important;
+        background: transparent !important;
+      }
+
+      /* Targeted override for common syntax elements with inline styles */
+      .swagger-ui [style*="color"],
+      .swagger-ui [style*="color:"] {
+        color: #333333 !important;
+      }
+
+      /* Override specific console colors */
+      .swagger-ui [style*="color: rgb(77, 208, 225)"],
+      .swagger-ui [style*="color: rgb(162, 252, 162)"],
+      .swagger-ui [style*="color: rgb(195, 232, 141)"],
+      .swagger-ui [style*="color: rgb(240, 113, 120)"],
+      .swagger-ui [style*="color: rgb(166, 226, 46)"],
+      .swagger-ui [style*="color: rgb(195, 232, 141)"],
+      .swagger-ui [style*="color:#"],
+      .swagger-ui [style*="color: #"] {
+        color: #333333 !important;
+      }
+
+      /* Property keys - slightly bolder */
+      .swagger-ui .microlight span[style*="rgb(195, 232, 141)"],
+      .swagger-ui .microlight span[style*="color:#"],
+      .swagger-ui .microlight span[style*="color: #"],
+      .swagger-ui .microlight span[style*="green"] {
+        color: #333333 !important;
+        font-weight: 600;
+      }
+
+      /* String values - slightly different tone */
+      .swagger-ui .microlight span[style*="rgb(162, 252, 162)"],
+      .swagger-ui .microlight span[style*="color: green"],
+      .swagger-ui .microlight span[style*="rgb(166, 226, 46)"] {
+        color: #444444 !important;
       }
 
       /* Code blocks for markdown */
