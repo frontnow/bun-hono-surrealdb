@@ -26,13 +26,26 @@ import {
   ProductListQuerySchema,
   ProductPathParamsSchema,
 } from "./schemas";
-// Serve static files from the public directory
-app.use(
-  "/swagger-custom.css",
-  serveStatic({ path: "./public/swagger-custom.css" })
-);
 export const runtime = "edge";
-
+// Serve static files from the public directory
+app.use("/swagger-custom.css", async (c) => {
+  try {
+    // Try to read the CSS file
+    const cssPath = path.join(process.cwd(), "public", "swagger-custom.css");
+    if (fs.existsSync(cssPath)) {
+      const content = fs.readFileSync(cssPath, "utf8");
+      return new Response(content, {
+        headers: {
+          "Content-Type": "text/css",
+        },
+      });
+    }
+    return c.notFound();
+  } catch (error) {
+    console.error("Error serving CSS:", error);
+    return c.notFound();
+  }
+});
 // Type definitions for our app variables
 type Variables = TimingVariables;
 
@@ -232,43 +245,12 @@ api.get("/products/:id", async (c) => {
   }
 });
 
-// Helper function to read the custom template
-const readSwaggerTemplate = (): string => {
-  try {
-    // For development environment
-    if (fs.existsSync("./public/swagger-template.html")) {
-      return fs.readFileSync("./public/swagger-template.html", "utf8");
-    }
-    // For Vercel deployment
-    else if (
-      fs.existsSync(path.join(process.cwd(), "public", "swagger-template.html"))
-    ) {
-      return fs.readFileSync(
-        path.join(process.cwd(), "public", "swagger-template.html"),
-        "utf8"
-      );
-    }
-    // Fallback to empty string if file not found
-    else {
-      console.warn("Swagger template file not found");
-      return "";
-    }
-  } catch (error) {
-    console.error("Error reading Swagger template:", error);
-    return "";
-  }
-};
-
-// Add Swagger UI with custom template
+// Add Swagger UI
 api.get(
   "/docs",
   swaggerUI({
     url: "/api/docs/json",
-    // Use our custom template if available, otherwise use default
-    manuallySwaggerUIHtml: readSwaggerTemplate().replace(
-      "__URL__",
-      "/api/docs/json"
-    ),
+    // Custom CSS can be included via link tag in the default Swagger UI template
   })
 );
 
@@ -451,6 +433,31 @@ api.get("/docs/json", (c) => {
 
 // Mount the API under /api
 app.route("/api", api);
+
+// Create a middleware to inject our custom CSS
+app.use("/api/docs", async (c, next) => {
+  await next();
+
+  // Only modify HTML responses
+  if (c.res.headers.get("Content-Type")?.includes("text/html")) {
+    // Get the original response HTML
+    const html = await c.res.text();
+
+    // Insert our custom CSS link in the head
+    const modifiedHtml = html.replace(
+      "</head>",
+      '<link rel="stylesheet" type="text/css" href="/swagger-custom.css">\n</head>'
+    );
+
+    // Create a new response with the modified HTML
+    return new Response(modifiedHtml, {
+      status: c.res.status,
+      headers: c.res.headers,
+    });
+  }
+
+  return c.res;
+});
 
 // Home route with custom metrics and API docs link
 app.get("/", async (c) => {
