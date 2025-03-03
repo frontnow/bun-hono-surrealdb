@@ -6,11 +6,11 @@
   <title>API Documentation</title>
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css">
   <style>
-    /* Pure monochromatic styling inspired by shadcn UI */
+    /* Ultra-minimal styling inspired by shadcn UI */
     :root {
       --background: #ffffff;
       --foreground: #000000;
-      --muted: #f5f5f5;
+      --muted: #f8f8f8;
       --muted-foreground: #71717a;
       --border: #e5e5e5;
       --border-strong: #d4d4d4;
@@ -24,6 +24,7 @@
       margin: 0;
       padding: 0;
       line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* Hide the default Swagger UI header */
@@ -35,7 +36,7 @@
     .api-header {
       background-color: #000000;
       color: #ffffff;
-      padding: 0.75rem 1.5rem;
+      padding: 0.6rem 1.5rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -43,9 +44,9 @@
     
     .api-header h1 {
       margin: 0;
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 500;
-      letter-spacing: -0.025em;
+      letter-spacing: -0.01em;
     }
     
     .api-header .links {
@@ -56,7 +57,7 @@
     .api-header .links a {
       color: #ffffff;
       text-decoration: none;
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       opacity: 0.85;
       transition: opacity 0.2s;
     }
@@ -67,7 +68,7 @@
 
     /* Content container */
     .content-wrapper {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 1.5rem;
     }
@@ -78,9 +79,10 @@
     }
 
     .swagger-ui .info .title {
-      font-weight: 600;
-      font-size: 1.5rem;
+      font-weight: 500;
+      font-size: 1.3rem;
       color: var(--foreground);
+      margin-top: 0;
     }
 
     .swagger-ui .information-container {
@@ -92,31 +94,14 @@
     }
 
     /* Override version badges with monochrome styling */
-    .swagger-ui .info .title span {
-      background-color: var(--muted) !important;
-      color: var(--foreground) !important;
-      border: 1px solid var(--border-strong);
-    }
-
-    /* Make OpenAPI badge monochrome */
-    .swagger-ui .opblock-tag small {
-      background-color: var(--muted) !important;
-      color: var(--foreground) !important;
-      border: 1px solid var(--border-strong);
-    }
-
-    /* Target OAS badge specifically */
-    .swagger-ui .info .title small.version-stamp {
-      background-color: var(--muted) !important;
-      color: var(--foreground) !important;
-      border: 1px solid var(--border-strong);
-    }
-
-    /* Override all badge colors */
+    .swagger-ui .info .title span,
     .swagger-ui .info .title small {
       background-color: var(--muted) !important;
       color: var(--foreground) !important;
       border: 1px solid var(--border-strong);
+      font-size: 0.7rem;
+      font-weight: 400;
+      margin-left: 0.5rem;
     }
 
     /* Operations */
@@ -138,8 +123,8 @@
     .swagger-ui .opblock .opblock-summary-method {
       border-radius: 0.25rem;
       font-weight: 500;
-      font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
       background-color: #000000 !important;
       color: #ffffff !important;
     }
@@ -163,25 +148,21 @@
       border-color: var(--border) !important;
     }
 
+    /* Make borders lighter */
+    .swagger-ui * {
+      border-color: var(--border) !important;
+    }
+
     /* Path typography */
     .swagger-ui .opblock .opblock-summary-path {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       color: var(--foreground) !important;
     }
 
     /* Path links */
     .swagger-ui .opblock .opblock-summary-path a {
       color: var(--foreground) !important;
-    }
-
-    /* Remove border colors from all operation blocks */
-    .swagger-ui .opblock.opblock-get .opblock-summary,
-    .swagger-ui .opblock.opblock-post .opblock-summary,
-    .swagger-ui .opblock.opblock-delete .opblock-summary,
-    .swagger-ui .opblock.opblock-put .opblock-summary,
-    .swagger-ui .opblock.opblock-patch .opblock-summary {
-      border-color: var(--border) !important;
     }
 
     /* Models */
@@ -191,27 +172,37 @@
     }
 
     .swagger-ui .model-title {
-      font-weight: 600;
+      font-weight: 500;
+      font-size: 0.9rem;
       color: var(--foreground);
     }
 
     /* Buttons */
     .swagger-ui .btn {
       border-radius: var(--radius);
-      font-weight: 500;
-      padding: 0.5rem 0.75rem;
+      font-weight: 400;
+      padding: 0.4rem 0.75rem;
       border: 1px solid var(--border);
       background-color: var(--background);
       color: var(--foreground);
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       line-height: 1.25rem;
       cursor: pointer;
+      transition: 0.2s background;
+    }
+
+    .swagger-ui .btn:hover {
+      background-color: var(--muted);
     }
 
     .swagger-ui .btn.execute {
       background-color: #000000 !important;
       color: #ffffff !important;
       border-color: #000000 !important;
+    }
+
+    .swagger-ui .btn.execute:hover {
+      opacity: 0.9;
     }
 
     .swagger-ui .btn.cancel {
@@ -224,15 +215,13 @@
     .swagger-ui .responses-inner h4,
     .swagger-ui .responses-inner h5 {
       color: var(--foreground) !important;
+      font-size: 0.9rem;
+      font-weight: 500;
     }
 
     .swagger-ui .response-col_status {
       color: var(--foreground) !important;
-    }
-
-    /* Response status code highlighting */
-    .swagger-ui .response-col_status .response-undocumented {
-      color: var(--muted-foreground) !important;
+      font-size: 0.8rem;
     }
 
     /* Override all response code colors */
@@ -250,17 +239,17 @@
       border: 1px solid var(--border);
       background-color: var(--background);
       color: var(--foreground);
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       line-height: 1.25rem;
     }
 
     .swagger-ui select {
-      padding: 0.5rem;
+      padding: 0.4rem 0.5rem;
       border-radius: var(--radius);
       border: 1px solid var(--border);
       background-color: var(--background);
       color: var(--foreground);
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       line-height: 1.25rem;
     }
     
@@ -281,9 +270,10 @@
 
     .swagger-ui table th, 
     .swagger-ui table td {
-      padding: 0.75rem;
+      padding: 0.6rem 0.75rem;
       text-align: left;
       color: var(--foreground);
+      font-size: 0.8rem;
     }
 
     /* Tags and sections */
@@ -291,6 +281,7 @@
       border-bottom: none;
       margin-top: 1.5rem;
       color: var(--foreground);
+      font-size: 1.1rem;
     }
     
     .swagger-ui .opblock-tag:first-of-type {
@@ -298,8 +289,8 @@
     }
     
     .swagger-ui .opblock-tag-section h3 {
-      font-size: 1.25rem;
-      font-weight: 600;
+      font-size: 1.1rem;
+      font-weight: 500;
       color: var(--foreground);
     }
     
@@ -329,10 +320,10 @@
     }
     
     .swagger-ui section.models h4 {
-      font-size: 1rem;
-      font-weight: 600;
+      font-size: 0.9rem;
+      font-weight: 500;
       margin: 0;
-      padding: 1rem;
+      padding: 0.8rem 1rem;
       color: var(--foreground);
     }
     
@@ -343,34 +334,65 @@
       background-color: var(--background) !important;
     }
     
-    /* No models message */
-    .swagger-ui .no-margin {
-      font-size: 0.875rem;
-      color: var(--muted-foreground);
-    }
-    
-    /* Schema display */
-    .swagger-ui .model-box {
-      background-color: var(--background);
-      border-radius: var(--radius);
-      margin-top: 0.5rem;
-    }
-    
     /* Description text */
     .swagger-ui .markdown p {
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       line-height: 1.5;
       margin: 0.5rem 0;
       color: var(--foreground);
     }
     
-    /* Code samples */
+    /* Code samples - LIGHT MODE */
+    .swagger-ui .highlight-code {
+      background-color: var(--muted) !important;
+      color: var(--foreground) !important;
+    }
+    
+    .swagger-ui .microlight {
+      background-color: var(--muted) !important;
+      color: var(--foreground) !important;
+      font-size: 0.8rem;
+      padding: 0.8rem 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    
+    /* Override syntax highlighting to be monochrome */
+    .swagger-ui .microlight .token.punctuation,
+    .swagger-ui .microlight .token.operator,
+    .swagger-ui .microlight .token.property,
+    .swagger-ui .microlight .token.string,
+    .swagger-ui .microlight .token.number,
+    .swagger-ui .microlight .token.boolean,
+    .swagger-ui .microlight .token.function,
+    .swagger-ui .microlight .token.keyword,
+    .swagger-ui .microlight .token.tag,
+    .swagger-ui .microlight .token.attr-name,
+    .swagger-ui .microlight .token.attr-value,
+    .swagger-ui .microlight .token.comment,
+    .swagger-ui .microlight .token.prolog,
+    .swagger-ui .microlight .token.doctype,
+    .swagger-ui .microlight .token.cdata,
+    .swagger-ui .microlight .token.namespace,
+    .swagger-ui .microlight .token.constant,
+    .swagger-ui .microlight .token.symbol,
+    .swagger-ui .microlight .token.deleted,
+    .swagger-ui .microlight .token.selector,
+    .swagger-ui .microlight .token.important,
+    .swagger-ui .microlight .token.atrule,
+    .swagger-ui .microlight .token.builtin,
+    .swagger-ui .microlight .token.entity,
+    .swagger-ui .microlight .token.url {
+      color: var(--foreground) !important;
+    }
+    
+    /* Code blocks for markdown */
     .swagger-ui .markdown code, 
     .swagger-ui .renderedMarkdown code {
       background-color: var(--muted);
       padding: 0.125rem 0.25rem;
       border-radius: 0.25rem;
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
       color: var(--foreground);
     }
     
@@ -395,12 +417,14 @@
     /* Parameter labels */
     .swagger-ui .parameters-col_name {
       color: var(--foreground);
+      font-size: 0.8rem;
     }
     
     /* Parameter names and required asterisk */
     .swagger-ui .parameter__name,
     .swagger-ui .parameter__name span {
       color: var(--foreground) !important;
+      font-size: 0.8rem;
     }
     
     /* Required field indicator */
@@ -420,6 +444,8 @@
     /* Filter box */
     .swagger-ui .filter-container input {
       border: 1px solid var(--border);
+      padding: 0.4rem 0.6rem;
+      font-size: 0.8rem;
     }
     
     /* Make the OAS/version badges specifically monochrome */
@@ -454,21 +480,112 @@
       background-color: rgba(0, 0, 0, 0.1);
     }
     
-    /* Override JSON schema highlighting */
-    .swagger-ui .prop-type {
+    /* Response content */
+    .swagger-ui .response-col_description__inner div,
+    .swagger-ui .response-col_description__inner span {
       color: var(--foreground) !important;
+      background-color: var(--muted) !important;
+      border-color: var(--border) !important;
     }
     
+    /* More spacing for better readability */
+    .swagger-ui .opblock-body {
+      padding: 0.5rem 1rem;
+    }
+    
+    /* Response section */
+    .swagger-ui .responses-inner {
+      padding: 0.5rem 0;
+    }
+    
+    /* Parameters */
+    .swagger-ui .parameters-container {
+      margin: 0;
+    }
+    
+    .swagger-ui .parameters-container .parameters {
+      margin: 0.5rem 0;
+    }
+    
+    /* Parameter description */
+    .swagger-ui .parameter__in {
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+    }
+    
+    /* Remove JSON editor coloring */
     .swagger-ui .json-schema-form-item {
       color: var(--foreground) !important;
     }
     
-    /* Target version badges directly */
-    .swagger-ui .info span.version,
-    .swagger-ui .info span.openapi-version {
+    /* JSON Property names */
+    .swagger-ui .model .property {
+      color: var(--foreground) !important;
+      font-size: 0.8rem;
+    }
+    
+    /* Simple styles for better readability */
+    .swagger-ui .opblock-description-wrapper {
+      padding: 0.5rem 0;
+    }
+    
+    /* Section headers */
+    .swagger-ui h4, .swagger-ui h5 {
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin: 0.5rem 0;
+    }
+    
+    /* Response tables */
+    .swagger-ui .response-col_status {
+      width: auto;
+      padding: 0.5rem;
+    }
+    
+    /* Servers dropdown */
+    .swagger-ui .servers-title {
+      font-size: 0.8rem;
+      margin: 0 0 0.5rem 0;
+    }
+    
+    .swagger-ui .servers > label {
+      font-size: 0.8rem;
+    }
+    
+    /* Copy button */
+    .swagger-ui .copy-to-clipboard {
+      background: var(--background);
+      border: 1px solid var(--border);
+    }
+    
+    /* Remove gradient backgrounds */
+    .swagger-ui .opblock .opblock-section-header h4 {
+      color: var(--foreground);
+      font-size: 0.9rem;
+    }
+    
+    /* Operation summary */
+    .swagger-ui .opblock-summary-description {
+      font-size: 0.8rem; 
+      color: var(--muted-foreground) !important;
+    }
+    
+    /* Make checkbox more modern */
+    .swagger-ui input[type=checkbox] {
+      margin-right: 0.5rem;
+    }
+    
+    /* All text in tables */
+    .swagger-ui td {
+      font-size: 0.8rem;
+    }
+    
+    /* Response content code blocks */
+    .swagger-ui pre {
+      font-size: 0.8rem;
       background-color: var(--muted) !important;
       color: var(--foreground) !important;
-      border: 1px solid var(--border-strong);
+      border: 1px solid var(--border);
     }
   </style>
 </head>
