@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Product API Documentation - Shadcn Style</title>
+  <title>API Documentation</title>
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css">
   <style>
-    /* Custom Swagger UI styling inspired by Shadcn UI */
+    /* Modern, clean styling inspired by Shadcn UI */
     :root {
       --background: #ffffff;
       --foreground: #09090b;
@@ -30,87 +30,92 @@
       color: var(--foreground);
       margin: 0;
       padding: 0;
+      line-height: 1.5;
     }
 
-    /* Header styling */
+    /* Hide the default Swagger UI header completely */
     .swagger-ui .topbar {
+      display: none !important;
+    }
+
+    /* Clean, modern header */
+    .api-header {
       background-color: var(--primary);
-      padding: 0.5rem 0;
-    }
-
-    .swagger-ui .topbar .download-url-wrapper .select-label {
       color: var(--primary-foreground);
-    }
-
-    .swagger-ui .topbar .download-url-wrapper input[type=text] {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-    }
-
-    /* Custom header */
-    .custom-header {
-      background-color: #18181b;
-      color: white;
-      padding: 1rem;
+      padding: 1rem 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-    .custom-header h1 {
+    
+    .api-header h1 {
       margin: 0;
       font-size: 1.25rem;
       font-weight: 600;
+      letter-spacing: -0.025em;
     }
-    .custom-header .links {
+    
+    .api-header .links {
       display: flex;
-      gap: 1rem;
+      gap: 1.5rem;
     }
-    .custom-header .links a {
-      color: white;
+    
+    .api-header .links a {
+      color: var(--primary-foreground);
       text-decoration: none;
       font-size: 0.875rem;
-      opacity: 0.8;
+      opacity: 0.85;
       transition: opacity 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
     }
-    .custom-header .links a:hover {
+    
+    .api-header .links a:hover {
       opacity: 1;
     }
 
-    /* Main content */
-    .swagger-ui .wrapper {
+    /* Content container */
+    .content-wrapper {
       max-width: 1200px;
-      padding: 0 1rem;
+      margin: 0 auto;
+      padding: 1.5rem;
     }
 
+    /* API info section */
     .swagger-ui .info {
-      margin: 2rem 0;
+      margin: 0;
     }
 
     .swagger-ui .info .title {
       font-weight: 600;
-      font-size: 2rem;
+      font-size: 1.5rem;
       color: var(--foreground);
     }
 
     .swagger-ui .information-container {
-      background-color: var(--background);
-      padding: 2rem 0;
-      margin-bottom: 1rem;
+      background: none;
+      padding: 0;
+      margin-bottom: 2rem;
       border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
     }
 
     /* Operations */
     .swagger-ui .opblock {
       margin: 0 0 1rem;
       border-radius: var(--radius);
-      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
       border: 1px solid var(--border);
       background-color: var(--background);
+      overflow: hidden;
     }
 
     .swagger-ui .opblock .opblock-summary {
       padding: 0.75rem 1rem;
       border-radius: var(--radius) var(--radius) 0 0;
+      border-bottom: 1px solid var(--border);
     }
 
     .swagger-ui .opblock .opblock-summary-method {
@@ -120,64 +125,50 @@
       padding: 0.25rem 0.5rem;
     }
 
-    .swagger-ui .opblock.opblock-get {
-      border-color: var(--border);
-    }
-
-    .swagger-ui .opblock.opblock-get .opblock-summary {
-      border-color: var(--border);
-    }
-
+    /* Method colors */
     .swagger-ui .opblock.opblock-get .opblock-summary-method {
       background-color: #3b82f6;
-    }
-
-    .swagger-ui .opblock.opblock-post {
-      border-color: var(--border);
-    }
-
-    .swagger-ui .opblock.opblock-post .opblock-summary {
-      border-color: var(--border);
     }
 
     .swagger-ui .opblock.opblock-post .opblock-summary-method {
       background-color: #10b981;
     }
 
-    .swagger-ui .opblock.opblock-delete {
-      border-color: var(--border);
-    }
-
-    .swagger-ui .opblock.opblock-delete .opblock-summary {
-      border-color: var(--border);
-    }
-
     .swagger-ui .opblock.opblock-delete .opblock-summary-method {
       background-color: #ef4444;
-    }
-
-    .swagger-ui .opblock.opblock-put {
-      border-color: var(--border);
-    }
-
-    .swagger-ui .opblock.opblock-put .opblock-summary {
-      border-color: var(--border);
     }
 
     .swagger-ui .opblock.opblock-put .opblock-summary-method {
       background-color: #f59e0b;
     }
 
+    .swagger-ui .opblock.opblock-patch .opblock-summary-method {
+      background-color: #8b5cf6;
+    }
+
+    /* Path typography */
+    .swagger-ui .opblock .opblock-summary-path {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Remove border from all opblocks */
+    .swagger-ui .opblock.opblock-get,
+    .swagger-ui .opblock.opblock-post,
+    .swagger-ui .opblock.opblock-delete,
+    .swagger-ui .opblock.opblock-put,
     .swagger-ui .opblock.opblock-patch {
       border-color: var(--border);
     }
 
+    .swagger-ui .opblock.opblock-get .opblock-summary,
+    .swagger-ui .opblock.opblock-post .opblock-summary,
+    .swagger-ui .opblock.opblock-delete .opblock-summary,
+    .swagger-ui .opblock.opblock-put .opblock-summary,
     .swagger-ui .opblock.opblock-patch .opblock-summary {
       border-color: var(--border);
-    }
-
-    .swagger-ui .opblock.opblock-patch .opblock-summary-method {
-      background-color: #8b5cf6;
     }
 
     /* Models */
@@ -236,26 +227,7 @@
       font-size: 0.875rem;
       line-height: 1.25rem;
     }
-
-    /* Response area */
-    .swagger-ui .responses-table {
-      border-radius: var(--radius);
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-
-    .swagger-ui .response-col_status {
-      font-weight: 600;
-    }
-
-    .swagger-ui .response-col_description__inner div {
-      margin: 0;
-      padding: 0.75rem;
-      border-radius: var(--radius);
-      background-color: var(--secondary);
-      color: var(--secondary-foreground);
-    }
-
+    
     /* Tables */
     .swagger-ui table {
       border-collapse: collapse;
@@ -277,75 +249,122 @@
       text-align: left;
     }
 
-    /* Other elements */
-    .swagger-ui .markdown p, 
-    .swagger-ui .markdown pre, 
-    .swagger-ui .renderedMarkdown p,
-    .swagger-ui .renderedMarkdown pre {
-      margin: 1rem 0;
+    /* Tags and sections */
+    .swagger-ui .opblock-tag {
+      border-bottom: none;
+      margin-top: 1.5rem;
     }
-
-    .swagger-ui .markdown code, 
-    .swagger-ui .renderedMarkdown code {
-      background-color: var(--muted);
-      padding: 0.25rem 0.5rem;
-      border-radius: 0.25rem;
-      font-size: 0.875rem;
+    
+    .swagger-ui .opblock-tag:first-of-type {
+      margin-top: 0.5rem;
     }
-
+    
+    .swagger-ui .opblock-tag-section h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+    
+    /* Scheme selection */
+    .swagger-ui .scheme-container {
+      background: none;
+      box-shadow: none;
+      margin: 0 0 1.5rem;
+      padding: 0 0 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .swagger-ui .auth-wrapper {
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .swagger-ui .auth-container {
+      margin: 0;
+    }
+    
+    /* Clean up models section */
     .swagger-ui section.models {
       border: 1px solid var(--border);
       border-radius: var(--radius);
       margin: 2rem 0;
     }
-
-    .swagger-ui section.models .model-container {
-      margin: 0;
-      border-bottom: 1px solid var(--border);
-    }
-
+    
     .swagger-ui section.models h4 {
-      font-size: 1.25rem;
+      font-size: 1rem;
       font-weight: 600;
       margin: 0;
       padding: 1rem;
     }
-
-    /* Schema styles */
-    .swagger-ui .model-box {
+    
+    .swagger-ui section.models .model-container {
+      margin: 0;
       padding: 1rem;
-      background-color: var(--background);
-      border-radius: var(--radius);
+      border-top: 1px solid var(--border);
     }
-
-    /* Toggle buttons */
-    .swagger-ui .expand-operation {
-      border: none;
-      background-color: transparent;
-    }
-
-    .swagger-ui .opblock-summary-control:focus {
-      outline: none;
-    }
-
-    .swagger-ui .arrow {
+    
+    /* No models message */
+    .swagger-ui .no-margin {
+      font-size: 0.875rem;
       color: var(--muted-foreground);
     }
+    
+    /* Response section */
+    .swagger-ui .response-controls {
+      padding: 0.5rem 1rem;
+    }
+    
+    .swagger-ui .responses-inner h4 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    
+    /* Parameter section */
+    .swagger-ui .parameters-container {
+      padding: 1rem;
+    }
+    
+    .swagger-ui .parameters-container h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 0;
+    }
+    
+    /* Improve description readability */
+    .swagger-ui .markdown p {
+      font-size: 0.875rem;
+      line-height: 1.5;
+      margin: 0.5rem 0;
+    }
+    
+    /* Code samples */
+    .swagger-ui .markdown code, 
+    .swagger-ui .renderedMarkdown code {
+      background-color: var(--muted);
+      padding: 0.125rem 0.25rem;
+      border-radius: 0.25rem;
+      font-size: 0.8125rem;
+    }
 
-    .content-wrapper {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0;
+    /* Clean schema display */
+    .swagger-ui .model-box {
+      background-color: var(--background);
+      border-radius: var(--radius);
+      margin-top: 0.5rem;
+    }
+
+    /* Expand/collapse icon */
+    .swagger-ui .model-toggle:after {
+      background-color: var(--muted);
     }
   </style>
   <link rel="icon" type="image/png" href="https://unpkg.com/swagger-ui-dist@5.9.0/favicon-32x32.png" sizes="32x32" />
-  <link rel="icon" type="image/png" href="https://unpkg.com/swagger-ui-dist@5.9.0/favicon-16x16.png" sizes="16x16" />
 </head>
 <body>
-  <div class="custom-header">
-    <h1>Product API Documentation</h1>
+  <div class="api-header">
+    <h1>API Documentation</h1>
     <div class="links">
-      <a href="/api/products" target="_blank">API</a>
+      <a href="/api/products">API</a>
       <a href="https://github.com/frontnow/bun-hono-surrealdb" target="_blank">GitHub</a>
     </div>
   </div>
@@ -355,26 +374,27 @@
   </div>
 
   <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
-  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
   <script>
     window.onload = function() {
-      // Begin Swagger UI call region
       const ui = SwaggerUIBundle({
         url: "URL_PLACEHOLDER", // This will be replaced by the swaggerUI middleware
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [
-          SwaggerUIBundle.presets.apis,
-          SwaggerUIStandalonePreset
+          SwaggerUIBundle.presets.apis
         ],
-        plugins: [
-          SwaggerUIBundle.plugins.DownloadUrl
-        ],
-        layout: "StandaloneLayout",
-        supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+        layout: "BaseLayout", // Use BaseLayout instead of StandaloneLayout to remove the duplicated header
+        defaultModelsExpandDepth: 1,
+        defaultModelExpandDepth: 1,
+        defaultModelRendering: 'model',
+        displayOperationId: false,
+        displayRequestDuration: true,
+        docExpansion: 'list',
+        filter: true,
+        showExtensions: false,
+        showCommonExtensions: false,
         tagsSorter: 'alpha'
       });
-      // End Swagger UI call region
       window.ui = ui;
     };
   </script>
