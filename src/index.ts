@@ -252,10 +252,9 @@ api.get(
   "/docs",
   swaggerUI({
     url: "/api/docs/json",
-    manuallySwaggerUIHtml: getSwaggerTemplate().replace(
-      "URL_PLACEHOLDER",
-      "/api/docs/json"
-    ),
+    manuallySwaggerUIHtml: (assets) => {
+      return getSwaggerTemplate().replace("URL_PLACEHOLDER", "/api/docs/json");
+    },
   })
 );
 
