@@ -443,4 +443,18 @@ export const PATCH = handler;
 export const PUT = handler;
 export const OPTIONS = handler;
 
-// No local server startup code needed for Vercel edge deployment
+// Start local server when not in production/Vercel environment
+if (process.env.VERCEL !== "1") {
+  const port = process.env.PORT || 3456;
+  console.log(`🚀 Server running at http://localhost:${port}`);
+
+  // Create and start the Bun server
+  const server = Bun.serve({
+    port: Number(port),
+    fetch: app.fetch,
+  });
+
+  console.log(
+    `📚 API Documentation available at http://localhost:${port}/api/docs`
+  );
+}
