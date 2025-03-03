@@ -948,6 +948,11 @@ const getSwaggerTemplate = (): string => {
         color: var(--foreground) !important;
         border: 1px solid var(--border);
       }
+      
+      /* Hide Filter by tag field */
+      .swagger-ui .filter-container {
+        display: none !important;
+      }
     </style>
   </head>
   <body>
