@@ -38,24 +38,43 @@ const app = new Hono<{ Variables: Variables }>();
 // Helper function to read the custom Swagger template
 const getSwaggerTemplate = (): string => {
   try {
-    // Try multiple possible locations for the template file, prioritizing the src version
-    // which has inline styles and doesn't depend on external CSS
-    const possiblePaths = [
-      // Original path - src version with inline styles (priority)
-      path.join(process.cwd(), "src", "swagger-template.html"),
-      // Path where Vercel copies the file according to buildCommand in vercel.json
-      path.join(process.cwd(), "api", "swagger-template.html"),
-      // Direct path that might work in Vercel
-      path.join("/var/task", "api", "swagger-template.html"),
-      path.join("/var/task", "src", "swagger-template.html"),
-      // Fallback to public directory (this version needs external CSS)
-      path.join(process.cwd(), "public", "swagger-template.html"),
-    ];
+    // In Vercel environment, we want the src template which has inline styles
+    // to avoid issues with external CSS files
+    if (process.env.VERCEL === "1") {
+      console.log(
+        "Running in Vercel environment, using inline styles template"
+      );
 
-    for (const templatePath of possiblePaths) {
-      if (fs.existsSync(templatePath)) {
-        console.log("Swagger template found at:", templatePath);
-        return fs.readFileSync(templatePath, "utf8");
+      // Try the src template (with inline styles) first in Vercel environment
+      const vercelPaths = [
+        path.join(process.cwd(), "src", "swagger-template.html"),
+        path.join("/var/task", "src", "swagger-template.html"),
+        path.join(process.cwd(), "api", "swagger-template.html"),
+        path.join("/var/task", "api", "swagger-template.html"),
+      ];
+
+      for (const templatePath of vercelPaths) {
+        if (fs.existsSync(templatePath)) {
+          console.log("Vercel: Swagger template found at:", templatePath);
+          return fs.readFileSync(templatePath, "utf8");
+        }
+      }
+    } else {
+      // For local development, try multiple possible locations
+      const possiblePaths = [
+        // Original path - src version with inline styles (priority)
+        path.join(process.cwd(), "src", "swagger-template.html"),
+        // Path where Vercel copies the file according to buildCommand in vercel.json
+        path.join(process.cwd(), "api", "swagger-template.html"),
+        // Fallback to public directory (this version needs external CSS)
+        path.join(process.cwd(), "public", "swagger-template.html"),
+      ];
+
+      for (const templatePath of possiblePaths) {
+        if (fs.existsSync(templatePath)) {
+          console.log("Local: Swagger template found at:", templatePath);
+          return fs.readFileSync(templatePath, "utf8");
+        }
       }
     }
 
