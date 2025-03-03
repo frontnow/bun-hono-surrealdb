@@ -23,6 +23,10 @@
     {
       "src": "src/swagger-template.html",
       "use": "@vercel/static"
+    },
+    {
+      "src": "public/swagger-custom.css",
+      "use": "@vercel/static"
     }
   ],
   "regions": ["fra1"],
