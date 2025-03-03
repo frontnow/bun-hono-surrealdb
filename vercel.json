@@ -34,7 +34,7 @@
     }
   ],
   "regions": ["fra1"],
-  "buildCommand": "bun run build && cp src/swagger-template.html api/",
+  "buildCommand": "bun run build && cp src/swagger-template.html api/ && cp public/swagger-custom.css api/",
   "installCommand": "bun install",
   "public": true
 }
