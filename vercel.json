@@ -24,9 +24,5 @@
   "regions": ["fra1"],
   "buildCommand": "bun run build",
   "installCommand": "bun install",
-  "functions": {
-    "api/index.js": {
-      "includeFiles": "src/swagger-template.html"
-    }
-  }
+  "public": true
 }
