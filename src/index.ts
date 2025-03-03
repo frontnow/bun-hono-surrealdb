@@ -35,25 +35,24 @@ type Variables = TimingVariables;
 // Create the main Hono app
 const app = new Hono<{ Variables: Variables }>();
 
-// Serve static CSS file
-app.use("/swagger-custom.css", async (c) => {
+// Helper function to read the custom Swagger template
+const getSwaggerTemplate = (): string => {
   try {
-    // Try to read the CSS file
-    const cssPath = path.join(process.cwd(), "public", "swagger-custom.css");
-    if (fs.existsSync(cssPath)) {
-      const content = fs.readFileSync(cssPath, "utf8");
-      return new Response(content, {
-        headers: {
-          "Content-Type": "text/css",
-        },
-      });
+    const templatePath = path.join(
+      process.cwd(),
+      "src",
+      "swagger-template.html"
+    );
+    if (fs.existsSync(templatePath)) {
+      return fs.readFileSync(templatePath, "utf8");
     }
-    return c.notFound();
+    console.warn("Swagger template file not found at", templatePath);
+    return "";
   } catch (error) {
-    console.error("Error serving CSS:", error);
-    return c.notFound();
+    console.error("Error reading Swagger template:", error);
+    return "";
   }
-});
+};
 
 // Custom fancy logger middleware
 const fancyLogger = (): MiddlewareHandler => {
@@ -248,11 +247,15 @@ api.get("/products/:id", async (c) => {
   }
 });
 
-// Add Swagger UI
+// Add Swagger UI with custom template
 api.get(
   "/docs",
   swaggerUI({
     url: "/api/docs/json",
+    manuallySwaggerUIHtml: getSwaggerTemplate().replace(
+      "URL_PLACEHOLDER",
+      "/api/docs/json"
+    ),
   })
 );
 
@@ -435,31 +438,6 @@ api.get("/docs/json", (c) => {
 
 // Mount the API under /api
 app.route("/api", api);
-
-// Create a middleware to inject our custom CSS
-app.use("/api/docs", async (c, next) => {
-  await next();
-
-  // Only modify HTML responses
-  if (c.res.headers.get("Content-Type")?.includes("text/html")) {
-    // Get the original response HTML
-    const html = await c.res.text();
-
-    // Insert our custom CSS link in the head
-    const modifiedHtml = html.replace(
-      "</head>",
-      '<link rel="stylesheet" type="text/css" href="/swagger-custom.css">\n</head>'
-    );
-
-    // Create a new response with the modified HTML
-    return new Response(modifiedHtml, {
-      status: c.res.status,
-      headers: c.res.headers,
-    });
-  }
-
-  return c.res;
-});
 
 // Home route with custom metrics and API docs link
 app.get("/", async (c) => {
