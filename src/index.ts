@@ -1,6 +1,9 @@
 import { Hono } from "hono";
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { swaggerUI } from "@hono/swagger-ui";
+import { serveStatic } from "hono/serve-static";
+import * as fs from "fs";
+import * as path from "path";
 import { timing, setMetric, startTime, endTime } from "hono/timing";
 import type { TimingVariables } from "hono/timing";
 import { prettyJSON } from "hono/pretty-json";
@@ -23,7 +26,11 @@ import {
   ProductListQuerySchema,
   ProductPathParamsSchema,
 } from "./schemas";
-
+// Serve static files from the public directory
+app.use(
+  "/swagger-custom.css",
+  serveStatic({ path: "./public/swagger-custom.css" })
+);
 export const runtime = "edge";
 
 // Type definitions for our app variables
@@ -225,11 +232,43 @@ api.get("/products/:id", async (c) => {
   }
 });
 
-// Add Swagger UI
+// Helper function to read the custom template
+const readSwaggerTemplate = (): string => {
+  try {
+    // For development environment
+    if (fs.existsSync("./public/swagger-template.html")) {
+      return fs.readFileSync("./public/swagger-template.html", "utf8");
+    }
+    // For Vercel deployment
+    else if (
+      fs.existsSync(path.join(process.cwd(), "public", "swagger-template.html"))
+    ) {
+      return fs.readFileSync(
+        path.join(process.cwd(), "public", "swagger-template.html"),
+        "utf8"
+      );
+    }
+    // Fallback to empty string if file not found
+    else {
+      console.warn("Swagger template file not found");
+      return "";
+    }
+  } catch (error) {
+    console.error("Error reading Swagger template:", error);
+    return "";
+  }
+};
+
+// Add Swagger UI with custom template
 api.get(
   "/docs",
   swaggerUI({
     url: "/api/docs/json",
+    // Use our custom template if available, otherwise use default
+    manuallySwaggerUIHtml: readSwaggerTemplate().replace(
+      "__URL__",
+      "/api/docs/json"
+    ),
   })
 );
 
