@@ -20,9 +20,9 @@
   },
   "name": "bun-hono",
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./api --target node --format esm --sourcemap",
-    "dev": "PORT=3457 bun run --hot src/index.ts",
-    "start": "bun run src/index.ts",
+    "build": "bun build ./src/server.ts --outdir ./api --target node --format esm --sourcemap",
+    "dev": "PORT=3457 bun run --hot src/server.ts",
+    "start": "bun run src/server.ts",
     "test": "bun test",
     "vercel-build": "bun run build"
   },

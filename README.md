@@ -1,79 +1,99 @@
-# Hono with Bun
+# Bun-Hono API
 
-A modern web API built with [Hono](https://hono.dev/) and [Bun](https://bun.sh/).
+A modern web API built with Hono, Bun, and SurrealDB that follows clean architecture principles.
 
 ## Features
 
-- ⚡️ Ultra-fast API powered by Bun runtime
-- 🎯 Built with TypeScript for type safety
-- 🧩 Modular architecture with route grouping
-- ⚙️ Includes middleware for logging, CORS, caching, and more
-- 🔄 Hot module reloading during development
-- 🗂️ Static file serving
-- 📊 Performance metrics and timing
+- 🚀 Built with [Bun](https://bun.sh/) for ultra-fast JavaScript runtime
+- 🌐 [Hono](https://hono.dev/) web framework for efficient routing and middleware
+- 📊 [SurrealDB](https://surrealdb.com/) for flexible graph database
+- 📝 OpenAPI/Swagger documentation
+- 🧩 Clean architecture with separation of concerns
+- 🔄 Type-safe APIs with Zod validation
+- ☁️ Ready for Vercel deployment
+
+## Project Structure
+
+```
+src/
+├── config/                # Configuration files
+│   ├── database.ts        # Database configuration
+│   ├── environment.ts     # Environment variable management
+│   └── swagger.ts         # Swagger configuration
+├── controllers/           # Request handlers
+│   └── product.controller.ts
+├── middleware/            # Middleware functions
+│   ├── error.middleware.ts
+│   └── logger.middleware.ts
+├── models/                # Data models and type definitions
+│   ├── brand.model.ts
+│   └── product.model.ts
+├── repositories/          # Data access layer
+│   └── product.repository.ts
+├── routes/                # API route definitions
+│   └── product.routes.ts
+├── utils/                 # Utility functions
+│   └── response.utils.ts
+├── app.ts                 # Main application setup
+└── server.ts              # Server entry point
+```
 
 ## Getting Started
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/) (latest version)
+- Bun installed: [Bun Installation Guide](https://bun.sh/docs/installation)
+- SurrealDB instance: [SurrealDB Installation Guide](https://surrealdb.com/docs/installation)
 
 ### Installation
 
-```sh
-# Clone the repository (if you haven't already)
-# git clone https://your-repository-url.git
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd bun-hono
+```
 
-# Install dependencies
+2. Install dependencies:
+```bash
 bun install
 ```
 
+3. Set up environment variables:
+```bash
+cp .env.example .env
+```
+Edit the `.env` file with your SurrealDB connection details and other configuration.
+
 ### Development
 
-```sh
-# Start the development server with hot reloading
+Start the development server:
+```bash
 bun run dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser.
+The server will start on the port specified in your `.env` file (default: 3457).
 
-### Production
+### Production Build
 
-```sh
-# Build the application
+Build the project for production:
+```bash
 bun run build
+```
 
-# Start the production server
+Run the production build:
+```bash
 bun run start
 ```
 
-## API Endpoints
+## API Documentation
 
-### Home
-- `GET /` - Returns welcome information and available endpoints
+Swagger UI documentation is available at `/api/docs` when the server is running.
 
-### Users API
-- `GET /api/users` - Get all users
-- `GET /api/users/:id` - Get user by ID
-- `POST /api/users` - Create a new user
-  - Required fields: `name`, `email`
+## Deployment
 
-### Static Assets
-- `GET /static/*` - Serves static files from the public directory
+### Vercel
 
-## Project Structure
-
-```
-/
-├── public/            # Static assets
-│   ├── index.html     # Frontend demo page
-│   ├── styles.css     # CSS styles
-│   └── main.js        # Frontend JavaScript
-├── src/
-│   └── index.ts       # Main application entry point
-├── package.json       # Project configuration
-└── tsconfig.json      # TypeScript configuration
-```
+This project is configured for Vercel deployment. The `vercel.json` file and server exports are set up for serverless functions.
 
 ## License
 

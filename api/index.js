@@ -10474,10 +10474,6 @@ var middleware = (options) => async (c) => {
     `);
 };
 
-// src/index.ts
-import * as fs from "fs";
-import * as path from "path";
-
 // node_modules/hono/dist/middleware/timing/timing.js
 var getTime = () => {
   try {
@@ -13044,48 +13040,962 @@ var handle = (app) => (req) => {
 var runtime = "edge";
 var app = new Hono2;
 var getSwaggerTemplate = () => {
-  try {
-    const possiblePaths = [
-      path.join(process.cwd(), "src", "swagger-template.html"),
-      path.join(process.cwd(), "api", "swagger-template.html"),
-      path.join("/var/task", "api", "swagger-template.html"),
-      path.join(process.cwd(), "public", "swagger-template.html")
-    ];
-    for (const templatePath of possiblePaths) {
-      if (fs.existsSync(templatePath)) {
-        console.log("Swagger template found at:", templatePath);
-        return fs.readFileSync(templatePath, "utf8");
-      }
-    }
-    console.warn("Swagger template file not found in any of the expected locations");
-    return `<!DOCTYPE html>
+  console.log("Using embedded Swagger template with inline styles");
+  return `<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>API Documentation</title>
-  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css">
-</head>
-<body>
-  <div id="swagger-ui"></div>
-  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
-  <script>
-    window.onload = function() {
-      const ui = SwaggerUIBundle({
-        url: "URL_PLACEHOLDER",
-        dom_id: "#swagger-ui",
-        presets: [SwaggerUIBundle.presets.apis],
-        layout: "BaseLayout"
-      });
-      window.ui = ui;
-    };
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Documentation</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css"
+    />
+    <style>
+      /* Ultra-minimal styling inspired by shadcn UI */
+      :root {
+        --background: #ffffff;
+        --foreground: #000000;
+        --muted: #f8f8f8;
+        --muted-foreground: #71717a;
+        --border: #e5e5e5;
+        --border-strong: #d4d4d4;
+        --radius: 0.375rem;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        background-color: var(--background);
+        color: var(--foreground);
+        margin: 0;
+        padding: 0;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Hide the default Swagger UI header */
+      .swagger-ui .topbar {
+        display: none !important;
+      }
+
+      /* Clean, minimal header */
+      .api-header {
+        background-color: #000000;
+        color: #ffffff;
+        padding: 0.6rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .api-header h1 {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+
+      .api-header .links {
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .api-header .links a {
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 0.8rem;
+        opacity: 0.85;
+        transition: opacity 0.2s;
+      }
+
+      .api-header .links a:hover {
+        opacity: 1;
+      }
+
+      /* Content container */
+      .content-wrapper {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 1.5rem;
+      }
+
+      /* API info section */
+      .swagger-ui .info {
+        margin: 0;
+      }
+
+      .swagger-ui .info .title {
+        font-weight: 500;
+        font-size: 1.3rem;
+        color: var(--foreground);
+        margin-top: 0;
+      }
+
+      .swagger-ui .information-container {
+        background: none;
+        padding: 0;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.5rem;
+      }
+
+      /* Clean version badges styling */
+      .swagger-ui .info .title span,
+      .swagger-ui .info .title small,
+      .swagger-ui .version-pragma {
+        background-color: #ffffff !important;
+        color: var(--foreground) !important;
+        border: 1px solid var(--border);
+        font-size: 0.7rem;
+        font-weight: 400;
+        margin-left: 0.5rem;
+        border-radius: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        position: relative;
+        top: -0.15rem;
+      }
+
+      /* Operations */
+      .swagger-ui .opblock {
+        margin: 0 0 1rem;
+        border-radius: var(--radius);
+        box-shadow: none;
+        border: 1px solid var(--border);
+        background-color: var(--background);
+        overflow: hidden;
+      }
+
+      /* Remove excess borders */
+      .swagger-ui .opblock-description-wrapper,
+      .swagger-ui .opblock-external-docs-wrapper,
+      .swagger-ui .opblock-title_normal {
+        border: none !important;
+        background: none !important;
+      }
+
+      .swagger-ui .opblock .opblock-summary {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      /* Monochromatic method badges */
+      .swagger-ui .opblock .opblock-summary-method {
+        border-radius: 0.25rem;
+        font-weight: 500;
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+        background-color: #000000 !important;
+        color: #ffffff !important;
+      }
+
+      /* Remove all color varieties from methods */
+      .swagger-ui .opblock.opblock-get .opblock-summary-method,
+      .swagger-ui .opblock.opblock-post .opblock-summary-method,
+      .swagger-ui .opblock.opblock-delete .opblock-summary-method,
+      .swagger-ui .opblock.opblock-put .opblock-summary-method,
+      .swagger-ui .opblock.opblock-patch .opblock-summary-method {
+        background-color: #000000 !important;
+      }
+
+      /* Make all opblocks monochrome */
+      .swagger-ui .opblock.opblock-get,
+      .swagger-ui .opblock.opblock-post,
+      .swagger-ui .opblock.opblock-delete,
+      .swagger-ui .opblock.opblock-put,
+      .swagger-ui .opblock.opblock-patch {
+        background-color: var(--background) !important;
+        border-color: var(--border) !important;
+      }
+
+      /* Make borders lighter and backgrounds consistent */
+      .swagger-ui * {
+        border-color: var(--border) !important;
+      }
+
+      /* Simplify all UI containers by removing background colors */
+      .swagger-ui .parameters-container,
+      .swagger-ui .opblock-section-header,
+      .swagger-ui .tab-container,
+      .swagger-ui .response-container,
+      .swagger-ui .model-container,
+      .swagger-ui .model-box,
+      .swagger-ui .servers-container {
+        background: var(--background) !important;
+      }
+
+      /* Super aggressive tab styling - remove all colors */
+      .swagger-ui .tab,
+      .swagger-ui .tab ul,
+      .swagger-ui .tab li, 
+      .swagger-ui .tab li:after,
+      .swagger-ui .tab li.active,
+      .swagger-ui .tab li.active:after,
+      .swagger-ui .tabitem,
+      .swagger-ui .tabitem.active,
+      .swagger-ui .tab-header .tab-item,
+      .swagger-ui .tab-header .tab-item.active,
+      .swagger-ui .tab-header .tab-item::after,
+      .swagger-ui .tab-header .tab-item.active::after,
+      .swagger-ui .opblock-tag span:after,
+      .swagger-ui .tab li:hover:after,
+      .swagger-ui .tab-header:after,
+      .swagger-ui .parameters-container .tabs-header .tab span:after,
+      /* Target ALL active indicators */
+      .swagger-ui .parameters-container .tab-header .tabs-menu li::after,
+      .swagger-ui .parameters-container .tab-header .tabs-menu li.active::after,
+      .swagger-ui .parameters-container .tab-header .tabs-menu.active::after,
+      .swagger-ui .parameters-container .tab-header .tabs-menu li,
+      .swagger-ui section.models .model-container .tabs .operation-tag-content-wrapper,
+      .swagger-ui .parameters-tabs-headers .tab-header,
+      .swagger-ui .parameters-tabs-headers .tab-header .tabs-menu.menu-item,
+      .swagger-ui .parameters-tabs-headers .tab-header .tabs-menu.menu-item.active,
+      .swagger-ui .parameters-tabs-headers .tab-header .tabs-menu.menu-item.active:after {
+        background: var(--muted) !important;
+        color: var(--foreground) !important;
+        border-color: var(--border) !important;
+      }
+
+      /* Specifically target active tab styles - NO COLORS */
+      .swagger-ui .tab li.active,
+      .swagger-ui .tab-header .tab-item.active,
+      .swagger-ui .parameters-container .tab-header .tabs-menu li.active,
+      .swagger-ui
+        .parameters-tabs-headers
+        .tab-header
+        .tabs-menu.menu-item.active {
+        background: var(--background) !important;
+        font-weight: 600;
+        border-bottom: 1px solid var(--border) !important;
+      }
+
+      /* COMPLETELY REMOVE tab indicator animations and colors */
+      .swagger-ui .tab li::after,
+      .swagger-ui .tab li.active::after,
+      .swagger-ui .tab-header .tab-item::after,
+      .swagger-ui .tab-header .tab-item.active::after,
+      .swagger-ui .parameters-container .tab-header .tabs-menu li::after,
+      .swagger-ui .parameters-container .tab-header .tabs-menu li.active::after,
+      .swagger-ui
+        .parameters-tabs-headers
+        .tab-header
+        .tabs-menu.menu-item::after,
+      .swagger-ui
+        .parameters-tabs-headers
+        .tab-header
+        .tabs-menu.menu-item.active::after,
+      .swagger-ui .opblock-tag span:after,
+      .swagger-ui .parameters-tabs-headers .tabs-menu-item.active:after,
+      .swagger-ui .parameters-tabs-headers .tabs-menu-item:after {
+        display: none !important;
+        height: 0 !important;
+        width: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        opacity: 0 !important;
+      }
+
+      /* Simplify tab bar layout */
+      .swagger-ui
+        .parameters-container
+        .parameters-col_description
+        .parameter__inner,
+      .swagger-ui
+        .parameters-container
+        .parameters-col_description
+        .parameter__info,
+      .swagger-ui .parameters-container .parameters {
+        background: var(--background) !important;
+        border: none !important;
+      }
+
+      /* Fix tabs and tab content */
+      .swagger-ui .operation-tag-content > div {
+        background: var(--background) !important;
+      }
+
+      /* Path typography */
+      .swagger-ui .opblock .opblock-summary-path {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+        font-size: 0.8rem;
+        color: var(--foreground) !important;
+      }
+
+      /* Path links */
+      .swagger-ui .opblock .opblock-summary-path a {
+        color: var(--foreground) !important;
+      }
+
+      /* Models */
+      .swagger-ui .model {
+        font-size: 0.875rem;
+        color: var(--foreground);
+      }
+
+      .swagger-ui .model-title {
+        font-weight: 500;
+        font-size: 0.9rem;
+        color: var(--foreground);
+      }
+
+      /* Buttons */
+      .swagger-ui .btn {
+        border-radius: var(--radius);
+        font-weight: 400;
+        padding: 0.4rem 0.75rem;
+        border: 1px solid var(--border);
+        background-color: var(--background);
+        color: var(--foreground);
+        font-size: 0.8rem;
+        line-height: 1.25rem;
+        cursor: pointer;
+        transition: 0.2s background;
+      }
+
+      .swagger-ui .btn:hover {
+        background-color: var(--muted);
+      }
+
+      .swagger-ui .btn.execute {
+        background-color: #000000 !important;
+        color: #ffffff !important;
+        border-color: #000000 !important;
+      }
+
+      .swagger-ui .btn.execute:hover {
+        opacity: 0.9;
+      }
+
+      .swagger-ui .btn.cancel {
+        background-color: var(--muted) !important;
+        color: var(--foreground) !important;
+        border-color: var(--border) !important;
+      }
+
+      /* Response status badges */
+      .swagger-ui .responses-inner h4,
+      .swagger-ui .responses-inner h5 {
+        color: var(--foreground) !important;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .swagger-ui .response-col_status {
+        color: var(--foreground) !important;
+        font-size: 0.8rem;
+      }
+
+      /* Override all response code colors */
+      .swagger-ui .responses-table .response-col_status {
+        color: var(--foreground) !important;
+      }
+
+      /* Form controls */
+      .swagger-ui input[type="text"],
+      .swagger-ui input[type="password"],
+      .swagger-ui input[type="search"],
+      .swagger-ui input[type="email"] {
+        padding: 0.5rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background-color: var(--background);
+        color: var(--foreground);
+        font-size: 0.8rem;
+        line-height: 1.25rem;
+      }
+
+      .swagger-ui select {
+        padding: 0.4rem 0.5rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background-color: var(--background);
+        color: var(--foreground);
+        font-size: 0.8rem;
+        line-height: 1.25rem;
+      }
+
+      /* Tables */
+      .swagger-ui table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      .swagger-ui table thead tr {
+        border-bottom: 1px solid var(--border);
+        background-color: var(--muted);
+      }
+
+      .swagger-ui table tbody tr:not(:last-child) {
+        border-bottom: 1px solid var(--border);
+      }
+
+      .swagger-ui table th,
+      .swagger-ui table td {
+        padding: 0.6rem 0.75rem;
+        text-align: left;
+        color: var(--foreground);
+        font-size: 0.8rem;
+      }
+
+      /* Tags and sections */
+      .swagger-ui .opblock-tag {
+        border-bottom: none;
+        margin-top: 1.5rem;
+        color: var(--foreground);
+        font-size: 1.1rem;
+      }
+
+      .swagger-ui .opblock-tag:first-of-type {
+        margin-top: 0.5rem;
+      }
+
+      .swagger-ui .opblock-tag-section h3 {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--foreground);
+      }
+
+      /* Scheme selection */
+      .swagger-ui .scheme-container {
+        background: none;
+        box-shadow: none;
+        margin: 0 0 1.5rem;
+        padding: 0 0 1.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .swagger-ui .auth-wrapper {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .swagger-ui .auth-container {
+        margin: 0;
+      }
+
+      /* Models section */
+      .swagger-ui section.models {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin: 2rem 0;
+      }
+
+      .swagger-ui section.models h4 {
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin: 0;
+        padding: 0.8rem 1rem;
+        color: var(--foreground);
+      }
+
+      .swagger-ui section.models .model-container {
+        margin: 0;
+        padding: 1rem;
+        border-top: 1px solid var(--border);
+        background-color: var(--background) !important;
+      }
+
+      /* Description text */
+      .swagger-ui .markdown p {
+        font-size: 0.8rem;
+        line-height: 1.5;
+        margin: 0.5rem 0;
+        color: var(--foreground);
+      }
+
+      /* Code samples - ELEGANT LIGHT MODE */
+      .swagger-ui .highlight-code,
+      .swagger-ui pre {
+        background-color: #fafafa !important;
+        color: #333333 !important;
+      }
+
+      .swagger-ui .microlight {
+        background-color: #fafafa !important;
+        color: #333333 !important;
+        font-size: 0.8rem;
+        padding: 0.8rem 1rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
+          monospace;
+        line-height: 1.5;
+      }
+
+      /* Elegant syntax highlighting with readable grayscale */
+      /* Basic tokens: punctuation, braces */
+      .swagger-ui .microlight .token.punctuation {
+        color: #555555 !important;
+      }
+
+      /* Properties, keys */
+      .swagger-ui .microlight .token.property {
+        color: #333333 !important;
+        font-weight: 600 !important;
+      }
+
+      /* Strings */
+      .swagger-ui .microlight .token.string {
+        color: #444444 !important;
+      }
+
+      /* Numbers, booleans */
+      .swagger-ui .microlight .token.number,
+      .swagger-ui .microlight .token.boolean {
+        color: #222222 !important;
+        font-weight: 500 !important;
+      }
+
+      /* Functions, keywords */
+      .swagger-ui .microlight .token.function,
+      .swagger-ui .microlight .token.keyword {
+        color: #333333 !important;
+        font-weight: 600 !important;
+      }
+
+      /* Comments */
+      .swagger-ui .microlight .token.comment,
+      .swagger-ui .microlight .token.prolog,
+      .swagger-ui .microlight .token.doctype,
+      .swagger-ui .microlight .token.cdata {
+        color: #777777 !important;
+        font-style: italic !important;
+      }
+
+      /* Other tokens */
+      .swagger-ui .microlight .token.operator,
+      .swagger-ui .microlight .token.tag,
+      .swagger-ui .microlight .token.attr-name,
+      .swagger-ui .microlight .token.attr-value,
+      .swagger-ui .microlight .token.namespace,
+      .swagger-ui .microlight .token.constant,
+      .swagger-ui .microlight .token.symbol,
+      .swagger-ui .microlight .token.deleted,
+      .swagger-ui .microlight .token.selector,
+      .swagger-ui .microlight .token.important,
+      .swagger-ui .microlight .token.atrule,
+      .swagger-ui .microlight .token.builtin,
+      .swagger-ui .microlight .token.entity,
+      .swagger-ui .microlight .token.url {
+        color: #333333 !important;
+      }
+
+      /* JSON specific styling - aggressively override any colors */
+      .swagger-ui .curl-command,
+      .swagger-ui .curl-command .microlight,
+      .swagger-ui .response-col_description__inner .microlight,
+      .swagger-ui .opblock-body pre,
+      .swagger-ui .example pre,
+      .swagger-ui .model-example pre {
+        background-color: #fafafa !important;
+        color: #333333 !important;
+      }
+
+      /* Force override ALL inline styles (important!) */
+      .swagger-ui .microlight span,
+      .swagger-ui .microlight span[style],
+      .swagger-ui .curl-command span,
+      .swagger-ui pre span,
+      .swagger-ui .highlight-code span,
+      .swagger-ui [class*="microlight"] span,
+      /* Target all styled elements */
+      .swagger-ui *[style*="color"],
+      .swagger-ui *[style*="background"],
+      /* Target specific blue elements */
+      .swagger-ui .tabitem.active,
+      .swagger-ui .tabitem,
+      .swagger-ui select,
+      .swagger-ui button,
+      .swagger-ui .tab-header,
+      .swagger-ui .tab-item,
+      .swagger-ui .parameter__name,
+      .swagger-ui table *,
+      .swagger-ui a,
+      .swagger-ui .servers,
+      .swagger-ui .download-url-wrapper,
+      .swagger-ui .opblock-control-arrow,
+      .swagger-ui input {
+        color: #333333 !important;
+        background: transparent !important;
+        border-color: var(--border) !important;
+      }
+
+      /* ALL links colorless */
+      .swagger-ui a,
+      .swagger-ui a:visited,
+      .swagger-ui a:hover,
+      .swagger-ui a:active {
+        color: #333333 !important;
+        text-decoration: underline !important;
+      }
+
+      /* Remove all borders except where structurally needed */
+      .swagger-ui .wrapper,
+      .swagger-ui .information-container,
+      .swagger-ui .scheme-container,
+      .swagger-ui .auth-wrapper,
+      .swagger-ui .models,
+      .swagger-ui .opblock-tag-section {
+        box-shadow: none !important;
+        background: transparent !important;
+      }
+
+      /* Simplify tables */
+      .swagger-ui table thead tr {
+        background: var(--muted) !important;
+        color: var(--foreground) !important;
+      }
+
+      .swagger-ui table,
+      .swagger-ui table tr,
+      .swagger-ui table td {
+        background: var(--background) !important;
+        color: var(--foreground) !important;
+      }
+
+      /* Reduce spacing */
+      .swagger-ui .wrapper {
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      /* Clean up parameter structure */
+      .swagger-ui .parameters-col_description {
+        border-top: none !important;
+      }
+
+      /* Override specific console colors */
+      .swagger-ui [style*="color: rgb(77, 208, 225)"],
+      .swagger-ui [style*="color: rgb(162, 252, 162)"],
+      .swagger-ui [style*="color: rgb(195, 232, 141)"],
+      .swagger-ui [style*="color: rgb(240, 113, 120)"],
+      .swagger-ui [style*="color: rgb(166, 226, 46)"],
+      .swagger-ui [style*="color: rgb(195, 232, 141)"],
+      .swagger-ui [style*="color:#"],
+      .swagger-ui [style*="color: #"] {
+        color: #333333 !important;
+      }
+
+      /* Property keys - slightly bolder */
+      .swagger-ui .microlight span[style*="rgb(195, 232, 141)"],
+      .swagger-ui .microlight span[style*="color:#"],
+      .swagger-ui .microlight span[style*="color: #"],
+      .swagger-ui .microlight span[style*="green"] {
+        color: #333333 !important;
+        font-weight: 600;
+      }
+
+      /* String values - slightly different tone */
+      .swagger-ui .microlight span[style*="rgb(162, 252, 162)"],
+      .swagger-ui .microlight span[style*="color: green"],
+      .swagger-ui .microlight span[style*="rgb(166, 226, 46)"] {
+        color: #444444 !important;
+      }
+
+      /* Code blocks for markdown */
+      .swagger-ui .markdown code,
+      .swagger-ui .renderedMarkdown code {
+        background-color: var(--muted);
+        padding: 0.125rem 0.25rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--foreground);
+      }
+
+      /* Links */
+      .swagger-ui .info a,
+      .swagger-ui .markdown a,
+      .swagger-ui .renderedMarkdown a {
+        color: var(--foreground) !important;
+        text-decoration: underline;
+      }
+
+      /* Hide extra UI elements */
+      .swagger-ui .info hgroup.main {
+        margin: 0;
+      }
+
+      /* All focused elements */
+      .swagger-ui *:focus-visible {
+        outline-color: var(--foreground) !important;
+      }
+
+      /* Parameter labels */
+      .swagger-ui .parameters-col_name {
+        color: var(--foreground);
+        font-size: 0.8rem;
+      }
+
+      /* Parameter names and required asterisk */
+      .swagger-ui .parameter__name,
+      .swagger-ui .parameter__name span {
+        color: var(--foreground) !important;
+        font-size: 0.8rem;
+      }
+
+      /* Required field indicator */
+      .swagger-ui .parameter__name.required:after {
+        color: var(--foreground) !important;
+      }
+
+      /* Fix ALL SVG elements with monochrome */
+      .swagger-ui svg,
+      .swagger-ui svg path,
+      .swagger-ui svg rect,
+      .swagger-ui svg circle,
+      .swagger-ui svg line,
+      .swagger-ui svg polygon,
+      .swagger-ui .arrow,
+      .swagger-ui .model-toggle,
+      .swagger-ui .expand-operation svg,
+      .swagger-ui .opblock-control-arrow {
+        fill: currentColor !important;
+        stroke: currentColor !important;
+        color: var(--foreground) !important;
+      }
+
+      /* All icons need to be monochrome */
+      .swagger-ui *[class*="icon"],
+      .swagger-ui .svg-assets,
+      .swagger-ui .expand-methods svg,
+      .swagger-ui .arrow,
+      .swagger-ui button svg {
+        fill: var(--foreground) !important;
+        color: var(--foreground) !important;
+        background: transparent !important;
+      }
+
+      /* Filter box */
+      .swagger-ui .filter-container input {
+        border: 1px solid var(--border);
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
+      }
+
+      /* Make the OAS/version badges specifically monochrome */
+      .swagger-ui .version-pragma {
+        color: var(--foreground) !important;
+        background-color: var(--muted) !important;
+        border: 1px solid var(--border-strong);
+      }
+
+      /* Override all operation icons */
+      .swagger-ui .opblock .opblock-summary-operation-id,
+      .swagger-ui .opblock .opblock-summary-path,
+      .swagger-ui .opblock .opblock-summary-path__deprecated,
+      .swagger-ui .opblock .opblock-summary-description {
+        color: var(--foreground) !important;
+      }
+
+      /* Remove any highlight colors */
+      .swagger-ui .opblock .opblock-section-header {
+        background-color: var(--muted) !important;
+        border-color: var(--border) !important;
+      }
+
+      /* Clean up authorization button */
+      .swagger-ui .btn.authorize {
+        color: var(--foreground) !important;
+        border-color: var(--border) !important;
+      }
+
+      /* Harmonize selection colors */
+      ::selection {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+
+      /* Response content */
+      .swagger-ui .response-col_description__inner div,
+      .swagger-ui .response-col_description__inner span {
+        color: var(--foreground) !important;
+        background-color: var(--muted) !important;
+        border-color: var(--border) !important;
+      }
+
+      /* Simplify opblock description wrapper */
+      .swagger-ui .opblock-description-wrapper {
+        padding: 0.75rem 1rem !important;
+        margin: 0 !important;
+        background: var(--background) !important;
+        border-bottom: 1px solid var(--border) !important;
+      }
+
+      /* Remove excessive backgrounds */
+      .swagger-ui .opblock-description-wrapper div,
+      .swagger-ui .opblock-description-wrapper p,
+      .swagger-ui .opblock-external-docs-wrapper,
+      .swagger-ui .renderedMarkdown {
+        background: transparent !important;
+        padding: 0 !important;
+        margin-bottom: 0.5rem !important;
+        border: none !important;
+      }
+
+      /* Blues in forms and UI */
+      .swagger-ui input[type="text"],
+      .swagger-ui input[type="password"],
+      .swagger-ui input[type="search"],
+      .swagger-ui input[type="email"],
+      .swagger-ui textarea {
+        border: 1px solid var(--border) !important;
+        background: var(--background) !important;
+        color: var(--foreground) !important;
+        box-shadow: none !important;
+      }
+
+      /* Blue focus states */
+      .swagger-ui *:focus,
+      .swagger-ui *:focus-within,
+      .swagger-ui *:active {
+        outline-color: #000000 !important;
+        border-color: #000000 !important;
+        box-shadow: none !important;
+      }
+
+      /* Fix tabs and buttons with blue */
+      .swagger-ui .tab {
+        background: transparent !important;
+      }
+
+      /* Response section */
+      .swagger-ui .responses-inner {
+        padding: 0.5rem 0;
+      }
+
+      /* Parameters */
+      .swagger-ui .parameters-container {
+        margin: 0;
+      }
+
+      .swagger-ui .parameters-container .parameters {
+        margin: 0.5rem 0;
+      }
+
+      /* Parameter description */
+      .swagger-ui .parameter__in {
+        color: var(--muted-foreground);
+        font-size: 0.75rem;
+      }
+
+      /* Remove JSON editor coloring */
+      .swagger-ui .json-schema-form-item {
+        color: var(--foreground) !important;
+      }
+
+      /* JSON Property names */
+      .swagger-ui .model .property {
+        color: var(--foreground) !important;
+        font-size: 0.8rem;
+      }
+
+      /* Section headers */
+      .swagger-ui h4,
+      .swagger-ui h5 {
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin: 0.5rem 0;
+      }
+
+      /* Response tables */
+      .swagger-ui .response-col_status {
+        width: auto;
+        padding: 0.5rem;
+      }
+
+      /* Servers dropdown */
+      .swagger-ui .servers-title {
+        font-size: 0.8rem;
+        margin: 0 0 0.5rem 0;
+      }
+
+      .swagger-ui .servers > label {
+        font-size: 0.8rem;
+      }
+
+      /* Copy button */
+      .swagger-ui .copy-to-clipboard {
+        background: var(--background);
+        border: 1px solid var(--border);
+      }
+
+      /* Remove gradient backgrounds */
+      .swagger-ui .opblock .opblock-section-header h4 {
+        color: var(--foreground);
+        font-size: 0.9rem;
+      }
+
+      /* Operation summary */
+      .swagger-ui .opblock-summary-description {
+        font-size: 0.8rem;
+        color: var(--muted-foreground) !important;
+      }
+
+      /* Make checkbox more modern */
+      .swagger-ui input[type="checkbox"] {
+        margin-right: 0.5rem;
+      }
+
+      /* All text in tables */
+      .swagger-ui td {
+        font-size: 0.8rem;
+      }
+
+      /* Response content code blocks */
+      .swagger-ui pre {
+        font-size: 0.8rem;
+        background-color: var(--muted) !important;
+        color: var(--foreground) !important;
+        border: 1px solid var(--border);
+      }
+      
+      /* Hide Filter by tag field */
+      .swagger-ui .filter-container {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="api-header">
+      <h1>API Documentation</h1>
+      <div class="links">
+        <a href="/api/products">API</a>
+        <a href="https://github.com/frontnow/bun-hono-surrealdb" target="_blank"
+          >GitHub</a
+        >
+      </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div id="swagger-ui"></div>
+    </div>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+    <script>
+      window.onload = function () {
+        const ui = SwaggerUIBundle({
+          url: "URL_PLACEHOLDER", // This will be replaced by the middleware
+          dom_id: "#swagger-ui",
+          deepLinking: true,
+          presets: [SwaggerUIBundle.presets.apis],
+          layout: "BaseLayout", // Use BaseLayout to remove duplicate header
+          defaultModelsExpandDepth: 1,
+          defaultModelExpandDepth: 1,
+          defaultModelRendering: "model",
+          displayOperationId: false,
+          displayRequestDuration: true,
+          docExpansion: "list",
+          filter: true,
+          showExtensions: false,
+          showCommonExtensions: false,
+          tagsSorter: "alpha",
+        });
+        window.ui = ui;
+      };
+    </script>
+  </body>
 </html>`;
-  } catch (error) {
-    console.error("Error reading Swagger template:", error);
-    return "";
-  }
 };
 var fancyLogger = () => {
   const reset = "\x1B[0m";
@@ -13105,7 +14015,7 @@ var fancyLogger = () => {
   const bgBlue = "\x1B[44m";
   return async (c, next) => {
     const method = c.req.method;
-    const path2 = c.req.path;
+    const path = c.req.path;
     const getMethodColor = (method2) => {
       switch (method2) {
         case "GET":
@@ -13137,13 +14047,13 @@ var fancyLogger = () => {
         return `${bright} ${status2} ${reset}`;
       }
     };
-    console.log(`${dim}[${new Date().toISOString()}]${reset} ${cyan}⟹${reset}  ${getMethodColor(method)} ${path2}`);
+    console.log(`${dim}[${new Date().toISOString()}]${reset} ${cyan}⟹${reset}  ${getMethodColor(method)} ${path}`);
     const startTime2 = Date.now();
     await next();
     const endTime2 = Date.now();
     const duration = endTime2 - startTime2;
     const status = c.res.status;
-    console.log(`${dim}[${new Date().toISOString()}]${reset} ${green}⟸${reset}  ${getMethodColor(method)} ${path2} ${getStatusColor(status)} ${dim}${duration}ms${reset}`);
+    console.log(`${dim}[${new Date().toISOString()}]${reset} ${green}⟸${reset}  ${getMethodColor(method)} ${path} ${getStatusColor(status)} ${dim}${duration}ms${reset}`);
   };
 };
 app.use("*", fancyLogger());
@@ -13437,5 +14347,5 @@ export {
   GET
 };
 
-//# debugId=5936DFB52D95EDEF64756E2164756E21
+//# debugId=5DC575CD82F2AF4364756E2164756E21
 //# sourceMappingURL=index.js.map
