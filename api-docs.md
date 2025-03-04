@@ -507,6 +507,7 @@ Get detailed product information with language customization.
     },
     "awards": [
       {
+        "id": "award_123",
         "title": {
           "en": "Product of the Year 2021",
           "de": "Produkt des Jahres 2021"
@@ -514,9 +515,17 @@ Get detailed product information with language customization.
         "issuer": {
           "en": "What Hi-Fi? Awards",
           "de": "What Hi-Fi? Awards"
+        },
+        "date": "2021-11-15",
+        "logo_url": "https://example.com/awards/what-hi-fi-logo.png",
+        "award_url": "https://www.whathifi.com/awards/2021/headphones",
+        "description": {
+          "en": "Recognized for outstanding performance, design excellence and value",
+          "de": "Ausgezeichnet für hervorragende Leistung, exzellentes Design und Preis-Leistungs-Verhältnis"
         }
       },
       {
+        "id": "award_456",
         "title": {
           "en": "Best Noise Cancelling Headphones",
           "de": "Beste Noise-Cancelling-Kopfhörer"
@@ -524,7 +533,82 @@ Get detailed product information with language customization.
         "issuer": {
           "en": "TechRadar Choice Awards 2021",
           "de": "TechRadar Choice Awards 2021"
+        },
+        "date": "2021-09-23",
+        "logo_url": "https://example.com/awards/techradar-logo.png",
+        "award_url": "https://www.techradar.com/awards/2021/audio",
+        "badge_url": "https://example.com/awards/badges/techradar-choice-2021.svg",
+        "category": {
+          "en": "Premium Audio",
+          "de": "Premium-Audio"
         }
+      }
+    ],
+    "certifications": [
+      {
+        "id": "cert_789",
+        "name": {
+          "en": "Bluetooth 5.0 Certified",
+          "de": "Bluetooth 5.0 Zertifiziert"
+        },
+        "issuer": {
+          "en": "Bluetooth Special Interest Group",
+          "de": "Bluetooth Special Interest Group"
+        },
+        "date_issued": "2020-07-12",
+        "valid_until": "2025-07-12",
+        "logo_url": "https://example.com/certifications/bluetooth-sig-logo.png",
+        "verification_url": "https://launchstudio.bluetooth.com/ListingDetails/12345",
+        "standards": ["Bluetooth 5.0", "A2DP", "AVRCP", "HFP", "HSP"],
+        "description": {
+          "en": "Certified for full compatibility with all Bluetooth 5.0 features including improved range and bandwidth",
+          "de": "Zertifiziert für vollständige Kompatibilität mit allen Bluetooth 5.0-Funktionen, einschließlich verbesserter Reichweite und Bandbreite"
+        }
+      },
+      {
+        "id": "cert_101",
+        "name": {
+          "en": "Hi-Res Audio Certified",
+          "de": "Hi-Res Audio Zertifiziert"
+        },
+        "issuer": {
+          "en": "Japan Audio Society",
+          "de": "Japan Audio Society"
+        },
+        "date_issued": "2020-08-03",
+        "logo_url": "https://example.com/certifications/hi-res-audio-logo.png",
+        "verification_code": "JAS-HR-12345",
+        "description": {
+          "en": "Meets or exceeds industry standards for high-resolution audio reproduction",
+          "de": "Erfüllt oder übertrifft Branchenstandards für hochauflösende Audiowiedergabe"
+        },
+        "testing_authority": {
+          "en": "Japan Audio Society Testing Laboratory",
+          "de": "Japan Audio Society Testlabor"
+        },
+        "compliance": ["96kHz/24bit minimum capability", "Frequency range extension to 40kHz"]
+      },
+      {
+        "id": "cert_102",
+        "name": {
+          "en": "CE Marking",
+          "de": "CE Kennzeichnung"
+        },
+        "issuer": {
+          "en": "European Union",
+          "de": "Europäische Union"
+        },
+        "date_issued": "2020-06-15",
+        "logo_url": "https://example.com/certifications/ce-mark.png",
+        "scope": {
+          "en": "European Economic Area Safety Compliance",
+          "de": "Sicherheitskonformität im Europäischen Wirtschaftsraum"
+        },
+        "directives": [
+          "2014/53/EU (Radio Equipment Directive)",
+          "2011/65/EU (RoHS Directive)",
+          "2012/19/EU (WEEE Directive)"
+        ]
       }
     ],
     "story": {
