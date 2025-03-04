@@ -402,6 +402,83 @@ Retrieve the results of a previously initiated search.
 }
 ```
 
+## Brand API
+
+Access comprehensive information about product brands, including their identity, values, and corporate details.
+
+### GET `/api/v1/brands/{brand_id}`
+Retrieve a specific brand by its unique identifier.
+
+#### Response:
+```json
+{
+  "id": "brand_sony",
+  "name": "Sony",
+  "searchable_aliases": ["sony corporation", "sony electronics"],
+  "established": 1946,
+  "display_name": {
+    "en": "Brand",
+    "de": "Marke"
+  },
+  "headquarters": {
+    "city": "Tokyo",
+    "country": "Japan"
+  },
+  "brand_values": [
+    {
+      "name": {
+        "en": "Innovation",
+        "de": "Innovation"
+      },
+      "description": {
+        "en": "Pushing the boundaries of what's possible",
+        "de": "Die Grenzen des Möglichen verschieben"
+      }
+    }
+  ],
+  "brand_identity": {
+    "logo": {
+      "primary_url": "https://example.com/logos/sony_logo_primary.svg",
+      "monochrome_url": "https://example.com/logos/sony_logo_mono.svg"
+    }
+  },
+  "divisions": [
+    {
+      "name": "Sony Electronics",
+      "products": ["TVs", "Audio", "Cameras"]
+    }
+  ]
+}
+```
+
+### GET `/api/v1/brands/search`
+Search for brands using various criteria.
+
+#### Query Parameters:
+- `query=Sony` (text to search in name and aliases)
+- `established_after=1940` (filter by establishment year)
+- `country=Japan` (filter by country)
+
+#### Response Example:
+```json
+{
+  "results": [
+    {
+      "id": "brand_sony",
+      "name": "Sony",
+      "established": 1946,
+      "headquarters": {
+        "country": "Japan"
+      },
+      "logo_url": "https://example.com/logos/sony_logo.svg"
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "pages": 1
+}
+```
+
 ## Product Data API
 
 Retrieve comprehensive product information with support for selective loading and multi-language content.
@@ -423,7 +500,22 @@ Get detailed product information with language customization.
     "de": "Sony WH-1000XM4 Kabellose Noise-Cancelling-Kopfhörer"
   },
   "gtin": "4548736112001",
-  "brand": "Sony",
+  "brand": {
+    "id": "brand_sony",
+    "name": "Sony",
+    "display_name": {
+      "en": "Brand",
+      "de": "Marke"
+    },
+    "established": 1946,
+    "country_of_origin": "Japan",
+    "description": {
+      "en": "Global electronics and entertainment company known for innovation and quality",
+      "de": "Globales Elektronik- und Unterhaltungsunternehmen, bekannt für Innovation und Qualität"
+    },
+    "logo_url": "https://example.com/logos/sony_logo_primary.svg",
+    "details_url": "/api/v1/brands/brand_sony"
+  },
   "categories": [
     {
       "id": "cat_456",
@@ -648,167 +740,6 @@ Get detailed product information with language customization.
       }
     ]
   },
-  "attributes": {
-    "color": {
-      "en": {
-        "key": "Color",
-        "value": "Black"
-      },
-      "de": {
-        "key": "Farbe",
-        "value": "schwarz"
-      }
-    },
-    "technical": {
-      "en": {
-        "key": "Technical",
-        "value": null
-      },
-      "de": {
-        "key": "Technisch",
-        "value": null
-      },
-      "children": {
-        "connectivity": {
-          "en": {
-            "key": "Connectivity",
-            "value": "Bluetooth 5.0"
-          },
-          "de": {
-            "key": "Konnektivität",
-            "value": "Bluetooth 5.0"
-          }
-        },
-        "battery": {
-          "en": {
-            "key": "Battery",
-            "value": null
-          },
-          "de": {
-            "key": "Akku",
-            "value": null
-          },
-          "children": {
-            "battery_life": {
-              "value": 30,
-              "unit": "h",
-              "en": {
-                "key": "Battery Life",
-                "formatted_value": "30 hours"
-              },
-              "de": {
-                "key": "Akkulaufzeit",
-                "formatted_value": "30 Stunden"
-              }
-            },
-            "charging_time": {
-              "value": 3,
-              "unit": "h",
-              "en": {
-                "key": "Charging Time",
-                "formatted_value": "3 hours"
-              },
-              "de": {
-                "key": "Ladezeit", 
-                "formatted_value": "3 Stunden"
-              }
-            }
-          }
-        }
-      }
-    },
-    "weight": {
-      "value": 254,
-      "unit": "g",
-      "en": {
-        "key": "Weight",
-        "formatted_value": "254 grams"
-      },
-      "en-US": {
-        "key": "Weight",
-        "formatted_value": "8.96 ounces"
-      },
-      "de": {
-        "key": "Gewicht",
-        "formatted_value": "254 Gramm"
-      }
-    },
-    "noise_cancellation": {
-      "en": {
-        "key": "Noise Cancellation",
-        "value": "Yes"
-      },
-      "de": {
-        "key": "Geräuschunterdrückung",
-        "value": "Ja"
-      }
-    }
-  },
-  "images": [
-    {
-      "url": "https://example.com/images/sony-wh1000xm4-front.jpg",
-      "language": "neutral"
-    },
-    {
-      "url": "https://example.com/images/sony-wh1000xm4-side.jpg",
-      "language": "neutral"
-    },
-    {
-      "url": "https://example.com/images/sony-wh1000xm4-folded.jpg",
-      "language": "neutral"
-    }
-  ],
-  "videos": [
-    {
-      "url": "https://example.com/videos/sony-wh1000xm4-overview.mp4",
-      "language": "en"
-    },
-    {
-      "url": "https://example.com/videos/sony-wh1000xm4-overview-de.mp4",
-      "language": "de"
-    }
-  ],
-  "documents": [
-    {
-      "type": "user_manual",
-      "url": "https://example.com/docs/sony-wh1000xm4-manual-en.pdf",
-      "language": "en"
-    },
-    {
-      "type": "user_manual",
-      "url": "https://example.com/docs/sony-wh1000xm4-manual-de.pdf",
-      "language": "de"
-    },
-    {
-      "type": "quick_start_guide",
-      "url": "https://example.com/docs/sony-wh1000xm4-quickstart-en.pdf",
-      "language": "en"
-    }
-  ],
-  "reviews": [
-    {
-      "rating": 5,
-      "author": "AudioEnthusiast",
-      "text": "Exceptional noise cancellation and sound quality. Worth every penny.",
-      "language": "en",
-      "date": "2023-03-15T18:22:31Z",
-      "verified_purchase": true
-    }
-  ],
-  "seo": {
-    "en": {
-      "title": "Sony WH-1000XM4 Wireless Noise-Canceling Headphones - Premium Sound Quality",
-      "meta_description": "Experience industry-leading noise cancellation and exceptional sound quality with Sony WH-1000XM4 wireless headphones. 30-hour battery life and premium comfort.",
-      "keywords": ["noise-canceling headphones", "wireless headphones", "Sony WH-1000XM4", "premium headphones"],
-      "structured_data": "{\"@context\":\"https://schema.org\",\"@type\":\"Product\",\"name\":\"Sony WH-1000XM4\",\"brand\":{\"@type\":\"Brand\",\"name\":\"Sony\"}}"
-    },
-    "de": {
-      "title": "Sony WH-1000XM4 Kabellose Noise-Cancelling-Kopfhörer - Premium-Klangqualität",
-      "meta_description": "Erleben Sie branchenführende Geräuschunterdrückung und außergewöhnliche Klangqualität mit den kabellosen Sony WH-1000XM4 Kopfhörern. 30 Stunden Akkulaufzeit und erstklassiger Komfort.",
-      "keywords": ["Noise-Cancelling-Kopfhörer", "kabellose Kopfhörer", "Sony WH-1000XM4", "Premium-Kopfhörer"],
-      "structured_data": "{\"@context\":\"https://schema.org\",\"@type\":\"Product\",\"name\":\"Sony WH-1000XM4\",\"brand\":{\"@type\":\"Brand\",\"name\":\"Sony\"}}"
-    }
-  },
   "images_enrichment": {
     "processed_images": [
       {
@@ -846,6 +777,202 @@ Get detailed product information with language customization.
       "Complete French translations",
       "Add lifestyle product images showing the headphones in use"
     ]
+  },
+  "ecosystem": {
+    "display_name": {
+      "en": "Ecosystem Integration",
+      "de": "Ökosystem-Integration"
+    },
+    "compatible_products": [
+      {
+        "product_id": "prod_87654",
+        "name": {
+          "en": "Sony WF-1000XM4 Wireless Earbuds",
+          "de": "Sony WF-1000XM4 Kabellose Ohrhörer"
+        },
+        "compatibility_type": "companion",
+        "features": [
+          {
+            "en": "Shared noise cancellation settings",
+            "de": "Gemeinsame Geräuschunterdrückungseinstellungen"
+          }
+        ]
+      }
+    ],
+    "third_party_integrations": [
+      {
+        "partner": "Spotify",
+        "display_name": {
+          "en": "Music Service",
+          "de": "Musikdienst"
+        },
+        "features": [
+          {
+            "en": "One-touch access",
+            "de": "Ein-Berührungs-Zugriff"
+          }
+        ]
+      }
+    ]
+  },
+  "product_family": {
+    "display_name": {
+      "en": "Product Family",
+      "de": "Produktfamilie"
+    },
+    "family_id": "fam_1000x",
+    "family_name": {
+      "en": "1000X Series",
+      "de": "1000X-Serie"
+    },
+    "generation": 4,
+    "predecessor": {
+      "product_id": "prod_wh1000xm3",
+      "name": {
+        "en": "Sony WH-1000XM3",
+        "de": "Sony WH-1000XM3"
+      }
+    },
+    "variants": [
+      {
+        "product_id": "prod_wh1000xm4_black",
+        "variation_type": "color",
+        "value": {
+          "en": "Black",
+          "de": "Schwarz"
+        }
+      }
+    ]
+  },
+  "environmental_impact": {
+    "display_name": {
+      "en": "Environmental Impact",
+      "de": "Umweltauswirkungen"
+    },
+    "carbon_footprint": {
+      "manufacturing": {
+        "value": 16.5,
+        "unit": "kg CO2e",
+        "certification": "ISO 14067:2018"
+      },
+      "total_lifecycle": {
+        "value": 29.4,
+        "unit": "kg CO2e",
+        "comparison": "15% reduction from previous model"
+      }
+    },
+    "materials": {
+      "recycled_content": {
+        "value": 37,
+        "unit": "%"
+      }
+    },
+    "certifications": [
+      {
+        "name": "Carbon Neutral Product",
+        "issuer": "Climate Impact Partners",
+        "valid_until": "2025-12-31"
+      }
+    ]
+  },
+  "compatibility": {
+    "display_name": {
+      "en": "Compatibility",
+      "de": "Kompatibilität"
+    },
+    "hardware": {
+      "display_name": {
+        "en": "Hardware Compatibility",
+        "de": "Hardware-Kompatibilität"
+      },
+      "audio_sources": [
+        {
+          "type": "smartphone",
+          "display_name": {
+            "en": "Smartphones",
+            "de": "Smartphones"
+          },
+          "connection_methods": ["bluetooth", "wired"],
+          "tested_devices": [
+            {
+              "manufacturer": "Apple",
+              "models": ["iPhone 13", "iPhone 14"]
+            }
+          ]
+        }
+      ]
+    },
+    "software": {
+      "display_name": {
+        "en": "Software Compatibility",
+        "de": "Software-Kompatibilität"
+      },
+      "applications": [
+        {
+          "name": "Sony Headphones Connect",
+          "platforms": ["iOS 14.0+", "Android 9.0+"]
+        }
+      ],
+      "voice_assistants": {
+        "display_name": {
+          "en": "Voice Assistants",
+          "de": "Sprachassistenten"
+        },
+        "supported": [
+          {
+            "name": "Google Assistant",
+            "setup_required": true
+          }
+        ]
+      }
+    }
+  },
+  "lifecycle": {
+    "display_name": {
+      "en": "Product Lifecycle",
+      "de": "Produktlebenszyklus"
+    },
+    "release_date": "2020-08-20",
+    "warranty": {
+      "standard_period": {
+        "value": 1,
+        "unit": "year"
+      },
+      "extended_options": [
+        {
+          "period": {
+            "value": 3,
+            "unit": "years"
+          },
+          "name": {
+            "en": "Sony Extended Protection Plan",
+            "de": "Sony Erweiterter Schutzplan"
+          }
+        }
+      ]
+    },
+    "software_support": {
+      "status": "active",
+      "end_date": "2025-08-20",
+      "latest_firmware": {
+        "version": "2.5.0",
+        "release_date": "2023-03-15",
+        "features_added": [
+          {
+            "en": "Improved noise cancellation algorithm",
+            "de": "Verbesserter Geräuschunterdrückungsalgorithmus"
+          }
+        ]
+      }
+    },
+    "availability": {
+      "status": "available",
+      "regions": ["NA", "EU", "APAC"]
+    },
+    "replacement_model": {
+      "product_id": "prod_wh1000xm5",
+      "expected_release": "2024-Q3"
+    }
   },
   "updated_at": "2023-04-12T09:45:33Z"
 }
