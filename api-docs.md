@@ -123,8 +123,9 @@ Request new translations or updates to existing translations:
 ### Multilingual Response Structure
 ProductGraph provides a consistent structure for multilingual content across all product data:
 
-#### Text Fields (name, description, etc.)
-Text fields use simple language-keyed objects:
+#### Text Fields & Content Structures
+
+**Simple Text Fields** (e.g., name) use language-keyed objects:
 
 ```json
 "name": {
@@ -133,29 +134,145 @@ Text fields use simple language-keyed objects:
 }
 ```
 
+**Rich Content Fields** are organized under a `content` object with various formats and types:
+
+```json
+"content": {
+  // Different description formats for different use cases
+  "short_description": {
+    "en": "Premium wireless headphones with industry-leading noise cancellation and 30-hour battery life.",
+    "de": "Premium-Funkkopfhörer mit branchenführender Geräuschunterdrückung und 30 Stunden Akkulaufzeit."
+  },
+  "description": {
+    "en": "Industry-leading noise cancellation technology helps block out background noise...",
+    "de": "Branchenführende Geräuschunterdrückungstechnologie hilft, Hintergrundgeräusche auszublenden..."
+  },
+  "markdown_description": {
+    "en": "# Sony WH-1000XM4 Wireless Headphones\n\n## Industry-Leading Noise Cancellation...",
+    "de": "# Sony WH-1000XM4 Kabellose Kopfhörer\n\n## Branchenführende Geräuschunterdrückung..."
+  },
+  
+  // Array of multilingual key benefits
+  "key_benefits": [
+    {
+      "en": "Industry-leading noise cancellation",
+      "de": "Branchenführende Geräuschunterdrückung"
+    },
+    {
+      "en": "Exceptional sound quality with 40mm drivers",
+      "de": "Außergewöhnliche Klangqualität mit 40-mm-Treibern"
+    }
+  ],
+  
+  // Other specialized content types
+  "technical_description": {
+    "en": "The WH-1000XM4 features Sony's HD Noise Canceling Processor QN1...",
+    "de": "Der WH-1000XM4 verfügt über Sonys HD Noise Canceling Processor QN1..."
+  },
+  
+  // Frequently asked questions as structured data
+  "faq": [
+    {
+      "question": {
+        "en": "Can I connect to multiple devices simultaneously?",
+        "de": "Kann ich mich mit mehreren Geräten gleichzeitig verbinden?"
+      },
+      "answer": {
+        "en": "Yes, the WH-1000XM4 supports multipoint connection...",
+        "de": "Ja, der WH-1000XM4 unterstützt Multipoint-Verbindung..."
+      }
+    }
+  ]
+}
+```
+
 #### Attributes
-Attributes support localized keys and values while maintaining a consistent structure:
+Attributes support localized keys and values, nested hierarchies, and ISO-standardized measurements:
 
 ```json
 "attributes": {
   "color": {
     "en": {
-      "key": "color",
-      "value": "black"
+      "key": "Color",
+      "value": "Black"
     },
     "de": {
       "key": "Farbe",
       "value": "schwarz"
     }
   },
-  "weight": {
+  "technical": {
     "en": {
-      "key": "weight",
-      "value": "8.96 ounces"
+      "key": "Technical",
+      "value": null
+    },
+    "de": {
+      "key": "Technisch",
+      "value": null
+    },
+    "children": {
+      "connectivity": {
+        "en": {
+          "key": "Connectivity",
+          "value": "Bluetooth 5.0"
+        },
+        "de": {
+          "key": "Konnektivität",
+          "value": "Bluetooth 5.0"
+        }
+      },
+      "battery": {
+        "en": {
+          "key": "Battery",
+          "value": null
+        },
+        "de": {
+          "key": "Akku",
+          "value": null
+        },
+        "children": {
+          "battery_life": {
+            "value": 30,
+            "unit": "h",
+            "en": {
+              "key": "Battery Life",
+              "formatted_value": "30 hours"
+            },
+            "de": {
+              "key": "Akkulaufzeit",
+              "formatted_value": "30 Stunden"
+            }
+          },
+          "charging_time": {
+            "value": 3,
+            "unit": "h",
+            "en": {
+              "key": "Charging Time",
+              "formatted_value": "3 hours"
+            },
+            "de": {
+              "key": "Ladezeit", 
+              "formatted_value": "3 Stunden"
+            }
+          }
+        }
+      }
+    }
+  },
+  "weight": {
+    "value": 254,
+    "unit": "g",
+    "en": {
+      "key": "Weight",
+      "formatted_value": "254 grams"
+    },
+    "en-US": {
+      "key": "Weight",
+      "formatted_value": "8.96 ounces"
     },
     "de": {
       "key": "Gewicht",
-      "value": "254 Gramm"
+      "formatted_value": "254 Gramm"
     }
   }
 }
@@ -307,63 +424,239 @@ Get detailed product information with language customization.
   },
   "gtin": "4548736112001",
   "brand": "Sony",
-  "category": {
-    "en": "Wireless Headphones",
-    "de": "Kabellose Kopfhörer"
-  },
-  "description": {
-    "en": "Industry-leading noise cancellation technology helps block out background noise for a more immersive listening experience. Enjoy premium sound quality with minimal distortion thanks to 40mm drivers and DSEE Extreme upscaling. Up to 30 hours of battery life with quick charging capability.",
-    "de": "Branchenführende Geräuschunterdrückungstechnologie hilft, Hintergrundgeräusche auszublenden, für ein intensiveres Hörerlebnis. Genießen Sie erstklassige Klangqualität mit minimaler Verzerrung dank 40-mm-Treibern und DSEE Extreme-Upscaling. Bis zu 30 Stunden Akkulaufzeit mit Schnellladefunktion."
+  "categories": [
+    {
+      "id": "cat_456",
+      "name": {
+        "en": "Wireless Headphones",
+        "de": "Kabellose Kopfhörer"
+      },
+      "parent": "cat_123",
+      "primary": true
+    },
+    {
+      "id": "cat_789",
+      "name": {
+        "en": "Noise-Canceling Devices",
+        "de": "Geräuschunterdrückende Geräte"
+      },
+      "parent": "cat_234",
+      "primary": false
+    }
+  ],
+  "content": {
+    "short_description": {
+      "en": "Premium wireless headphones with industry-leading noise cancellation and 30-hour battery life.",
+      "de": "Premium-Funkkopfhörer mit branchenführender Geräuschunterdrückung und 30 Stunden Akkulaufzeit."
+    },
+    "description": {
+      "en": "Industry-leading noise cancellation technology helps block out background noise for a more immersive listening experience. Enjoy premium sound quality with minimal distortion thanks to 40mm drivers and DSEE Extreme upscaling. Up to 30 hours of battery life with quick charging capability.",
+      "de": "Branchenführende Geräuschunterdrückungstechnologie hilft, Hintergrundgeräusche auszublenden, für ein intensiveres Hörerlebnis. Genießen Sie erstklassige Klangqualität mit minimaler Verzerrung dank 40-mm-Treibern und DSEE Extreme-Upscaling. Bis zu 30 Stunden Akkulaufzeit mit Schnellladefunktion."
+    },
+    "markdown_description": {
+      "en": "# Sony WH-1000XM4 Wireless Headphones\n\n## Industry-Leading Noise Cancellation\n\nExperience the next level of silence with industry-leading noise cancellation technology that intelligently eliminates unwanted sound.\n\n## Premium Sound Quality\n\n- **HD Noise Canceling Processor QN1**: Powerful processing for exceptional noise cancellation\n- **40mm Drivers**: Delivers rich, clear audio across the frequency spectrum\n- **DSEE Extreme**: AI-powered upscaling restores detail to compressed music\n\n## All-Day Comfort and Battery\n\nEnjoy up to **30 hours** of battery life with quick charging capability (5 hours of playback from just 10 minutes of charging).",
+      "de": "# Sony WH-1000XM4 Kabellose Kopfhörer\n\n## Branchenführende Geräuschunterdrückung\n\nErleben Sie die nächste Stufe der Stille mit einer branchenführenden Geräuschunterdrückungstechnologie, die unerwünschte Geräusche intelligent eliminiert.\n\n## Erstklassige Klangqualität\n\n- **HD Noise Canceling Processor QN1**: Leistungsstarke Verarbeitung für außergewöhnliche Geräuschunterdrückung\n- **40-mm-Treiber**: Liefert reichen, klaren Klang über das gesamte Frequenzspektrum\n- **DSEE Extreme**: KI-gestützte Hochskalierung stellt Details in komprimierter Musik wieder her\n\n## Ganztägiger Komfort und Akku\n\nGenießen Sie bis zu **30 Stunden** Akkulaufzeit mit Schnellladefunktion (5 Stunden Wiedergabe nach nur 10 Minuten Laden)."
+    },
+    "key_benefits": [
+      {
+        "en": "Industry-leading noise cancellation",
+        "de": "Branchenführende Geräuschunterdrückung"
+      },
+      {
+        "en": "Exceptional sound quality with 40mm drivers",
+        "de": "Außergewöhnliche Klangqualität mit 40-mm-Treibern"
+      },
+      {
+        "en": "30-hour battery life with quick charging",
+        "de": "30 Stunden Akkulaufzeit mit Schnellladefunktion"
+      },
+      {
+        "en": "Speak-to-chat automatic pause function",
+        "de": "Speak-to-Chat automatische Pausenfunktion"
+      },
+      {
+        "en": "Multipoint connection to pair with two devices",
+        "de": "Multipoint-Verbindung zur Kopplung mit zwei Geräten"
+      }
+    ],
+    "usage_scenarios": {
+      "en": "Perfect for daily commute, air travel, working from home, gym workouts, and focused study sessions. The adaptive sound control automatically adjusts settings based on your location and activities.",
+      "de": "Perfekt für den täglichen Arbeitsweg, Flugreisen, Heimarbeit, Fitnessstudio-Training und konzentrierte Lernsitzungen. Die adaptive Klangsteuerung passt die Einstellungen automatisch an Ihren Standort und Ihre Aktivitäten an."
+    },
+    "technical_description": {
+      "en": "The WH-1000XM4 features Sony's HD Noise Canceling Processor QN1 with dual noise sensor technology utilizing forward and feedback microphones for superior noise cancellation. It employs Bluetooth 5.0 with support for SBC, AAC, and LDAC codecs, offering high-resolution audio when paired with compatible devices. The Precise Voice Pickup technology uses 5 microphones and advanced audio signal processing for clearer hands-free calls.",
+      "de": "Der WH-1000XM4 verfügt über Sonys HD Noise Canceling Processor QN1 mit Dual-Noise-Sensor-Technologie, die Vorwärts- und Feedback-Mikrofone für überlegene Geräuschunterdrückung nutzt. Er verwendet Bluetooth 5.0 mit Unterstützung für SBC-, AAC- und LDAC-Codecs und bietet hochauflösenden Klang, wenn er mit kompatiblen Geräten gekoppelt wird. Die Precise Voice Pickup-Technologie verwendet 5 Mikrofone und fortschrittliche Audiosignalverarbeitung für klarere Freisprechanrufe."
+    },
+    "comparison_points": [
+      {
+        "en": "Better noise cancellation than Bose QC45",
+        "de": "Bessere Geräuschunterdrückung als Bose QC45"
+      },
+      {
+        "en": "Superior sound quality to Apple AirPods Max",
+        "de": "Überlegene Klangqualität gegenüber Apple AirPods Max"
+      },
+      {
+        "en": "Longer battery life than Sennheiser Momentum 4",
+        "de": "Längere Akkulaufzeit als Sennheiser Momentum 4"
+      }
+    ],
+    "sustainability": {
+      "en": "Packaging made from sustainable materials with plastic-free packaging goals. Sony's Green Management 2025 targets include eliminating plastic packaging and promoting product recycling programs.",
+      "de": "Verpackung aus nachhaltigen Materialien mit plastikfreien Verpackungszielen. Sonys Ziele für Green Management 2025 umfassen die Beseitigung von Plastikverpackungen und die Förderung von Produktrecyclingprogrammen."
+    },
+    "awards": [
+      {
+        "title": {
+          "en": "Product of the Year 2021",
+          "de": "Produkt des Jahres 2021"
+        },
+        "issuer": {
+          "en": "What Hi-Fi? Awards",
+          "de": "What Hi-Fi? Awards"
+        }
+      },
+      {
+        "title": {
+          "en": "Best Noise Cancelling Headphones",
+          "de": "Beste Noise-Cancelling-Kopfhörer"
+        },
+        "issuer": {
+          "en": "TechRadar Choice Awards 2021",
+          "de": "TechRadar Choice Awards 2021"
+        }
+      }
+    ],
+    "story": {
+      "en": "The WH-1000XM4 represents the culmination of Sony's audio engineering expertise, building on the success of the previous XM3 model. Developed through extensive research and user feedback, Sony's engineers focused on improving the already industry-leading noise cancellation while enhancing comfort for extended wear. Each component, from the ear cushions to the headband, has been meticulously designed and tested across diverse environments and use cases.",
+      "de": "Der WH-1000XM4 stellt den Höhepunkt von Sonys Audio-Engineering-Expertise dar und baut auf dem Erfolg des vorherigen XM3-Modells auf. Entwickelt durch umfangreiche Forschung und Benutzer-Feedback, konzentrierten sich Sonys Ingenieure darauf, die bereits branchenführende Geräuschunterdrückung zu verbessern und gleichzeitig den Komfort für längeres Tragen zu erhöhen. Jede Komponente, von den Ohrpolstern bis zum Kopfbügel, wurde akribisch gestaltet und in verschiedenen Umgebungen und Anwendungsfällen getestet."
+    },
+    "faq": [
+      {
+        "question": {
+          "en": "Can I connect to multiple devices simultaneously?",
+          "de": "Kann ich mich mit mehreren Geräten gleichzeitig verbinden?"
+        },
+        "answer": {
+          "en": "Yes, the WH-1000XM4 supports multipoint connection, allowing you to pair with two Bluetooth devices at once and switch between them seamlessly.",
+          "de": "Ja, der WH-1000XM4 unterstützt Multipoint-Verbindung, sodass Sie ihn mit zwei Bluetooth-Geräten gleichzeitig koppeln und nahtlos zwischen ihnen wechseln können."
+        }
+      },
+      {
+        "question": {
+          "en": "How does the Speak-to-Chat feature work?",
+          "de": "Wie funktioniert die Speak-to-Chat-Funktion?"
+        },
+        "answer": {
+          "en": "When enabled, Speak-to-Chat automatically pauses your music and lets in ambient sound when you start speaking, allowing for conversations without removing your headphones. It automatically resumes your music when you stop talking.",
+          "de": "Wenn aktiviert, pausiert Speak-to-Chat automatisch Ihre Musik und lässt Umgebungsgeräusche herein, wenn Sie zu sprechen beginnen, was Gespräche ermöglicht, ohne dass Sie Ihre Kopfhörer abnehmen müssen. Es setzt Ihre Musik automatisch fort, wenn Sie aufhören zu sprechen."
+        }
+      },
+      {
+        "question": {
+          "en": "Are the ear pads replaceable?",
+          "de": "Sind die Ohrpolster austauschbar?"
+        },
+        "answer": {
+          "en": "Yes, the ear pads are replaceable and can be purchased separately from Sony's parts department or authorized retailers.",
+          "de": "Ja, die Ohrpolster sind austauschbar und können separat bei Sonys Ersatzteilabteilung oder autorisierten Händlern erworben werden."
+        }
+      }
+    ]
   },
   "attributes": {
     "color": {
       "en": {
-        "key": "color",
-        "value": "black"
+        "key": "Color",
+        "value": "Black"
       },
       "de": {
         "key": "Farbe",
         "value": "schwarz"
       }
     },
-    "weight": {
+    "technical": {
       "en": {
-        "key": "weight",
-        "value": "8.96 ounces"
+        "key": "Technical",
+        "value": null
+      },
+      "de": {
+        "key": "Technisch",
+        "value": null
+      },
+      "children": {
+        "connectivity": {
+          "en": {
+            "key": "Connectivity",
+            "value": "Bluetooth 5.0"
+          },
+          "de": {
+            "key": "Konnektivität",
+            "value": "Bluetooth 5.0"
+          }
+        },
+        "battery": {
+          "en": {
+            "key": "Battery",
+            "value": null
+          },
+          "de": {
+            "key": "Akku",
+            "value": null
+          },
+          "children": {
+            "battery_life": {
+              "value": 30,
+              "unit": "h",
+              "en": {
+                "key": "Battery Life",
+                "formatted_value": "30 hours"
+              },
+              "de": {
+                "key": "Akkulaufzeit",
+                "formatted_value": "30 Stunden"
+              }
+            },
+            "charging_time": {
+              "value": 3,
+              "unit": "h",
+              "en": {
+                "key": "Charging Time",
+                "formatted_value": "3 hours"
+              },
+              "de": {
+                "key": "Ladezeit", 
+                "formatted_value": "3 Stunden"
+              }
+            }
+          }
+        }
+      }
+    },
+    "weight": {
+      "value": 254,
+      "unit": "g",
+      "en": {
+        "key": "Weight",
+        "formatted_value": "254 grams"
+      },
+      "en-US": {
+        "key": "Weight",
+        "formatted_value": "8.96 ounces"
       },
       "de": {
         "key": "Gewicht",
-        "value": "254 Gramm"
-      }
-    },
-    "battery_life": {
-      "en": {
-        "key": "battery life",
-        "value": "30 hours"
-      },
-      "de": {
-        "key": "Akkulaufzeit",
-        "value": "30 Stunden"
+        "formatted_value": "254 Gramm"
       }
     },
     "noise_cancellation": {
       "en": {
-        "key": "noise cancellation",
-        "value": "yes"
+        "key": "Noise Cancellation",
+        "value": "Yes"
       },
       "de": {
         "key": "Geräuschunterdrückung",
-        "value": "ja"
-      }
-    },
-    "connectivity": {
-      "en": {
-        "key": "connectivity",
-        "value": "Bluetooth 5.0"
-      },
-      "de": {
-        "key": "Konnektivität",
-        "value": "Bluetooth 5.0"
+        "value": "Ja"
       }
     }
   },
