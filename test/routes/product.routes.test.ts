@@ -22,19 +22,19 @@ describe('Product Routes', () => {
     // Add our test routes with the mock handlers
     beforeAll(() => {
         // GET /products - Get all products
-        app.get("/api/products", mockHandlers.getProductsHandler);
+        app.get("/v1/products", mockHandlers.getProductsHandler);
 
         // GET /products/:id - Get a product by ID
-        app.get("/api/products/:id", mockHandlers.getProductByIdHandler);
+        app.get("/v1/products/:id", mockHandlers.getProductByIdHandler);
 
         // POST /products - Create a new product
-        app.post("/api/products", mockHandlers.createProductHandler);
+        app.post("/v1/products", mockHandlers.createProductHandler);
 
         // PUT /products/:id - Update a product
-        app.put("/api/products/:id", mockHandlers.updateProductHandler);
+        app.put("/v1/products/:id", mockHandlers.updateProductHandler);
 
         // DELETE /products/:id - Delete a product
-        app.delete("/api/products/:id", mockHandlers.deleteProductHandler);
+        app.delete("/v1/products/:id", mockHandlers.deleteProductHandler);
     });
 
     beforeEach(() => {
@@ -49,7 +49,7 @@ describe('Product Routes', () => {
     describe('GET /products', () => {
         it('should route to the getProductsHandler', async () => {
             // Create test request
-            const req = new Request('http://localhost/api/products');
+            const req = new Request('http://localhost/v1/products');
 
             // Send request to our app
             await app.fetch(req);
@@ -62,7 +62,7 @@ describe('Product Routes', () => {
     describe('GET /products/:id', () => {
         it('should route to the getProductByIdHandler', async () => {
             // Create test request
-            const req = new Request('http://localhost/api/products/1');
+            const req = new Request('http://localhost/v1/products/1');
 
             // Send request to our app
             await app.fetch(req);
@@ -75,7 +75,7 @@ describe('Product Routes', () => {
     describe('POST /products', () => {
         it('should route to the createProductHandler', async () => {
             // Create test request
-            const req = new Request('http://localhost/api/products', {
+            const req = new Request('http://localhost/v1/products', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -97,7 +97,7 @@ describe('Product Routes', () => {
     describe('PUT /products/:id', () => {
         it('should route to the updateProductHandler', async () => {
             // Create test request
-            const req = new Request('http://localhost/api/products/1', {
+            const req = new Request('http://localhost/v1/products/1', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -119,7 +119,7 @@ describe('Product Routes', () => {
     describe('DELETE /products/:id', () => {
         it('should route to the deleteProductHandler', async () => {
             // Create test request
-            const req = new Request('http://localhost/api/products/1', {
+            const req = new Request('http://localhost/v1/products/1', {
                 method: 'DELETE'
             });
 

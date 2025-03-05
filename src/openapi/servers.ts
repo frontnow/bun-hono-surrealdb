@@ -3,7 +3,7 @@
  */
 export const servers = [
     {
-        url: "/api",
+        url: "/v1",
         description: "API endpoint"
     },
     {

@@ -27,7 +27,7 @@ app.use("*", cors());
 app.use("*", timing());
 
 // Set up API routes
-app.route("/api", productRouter);
+app.route("/v1", productRouter);
 
 // Import the OpenAPI specification
 import { openAPIDoc } from './openapi';
@@ -39,9 +39,9 @@ const apiDocs = new OpenAPIHono();
 apiDocs.get(
     "/docs",
     swaggerUI({
-        url: "/api/docs/json",
+        url: "/v1/docs/json",
         manuallySwaggerUIHtml: () => {
-            return getSwaggerTemplate().replace("URL_PLACEHOLDER", "/api/docs/json");
+            return getSwaggerTemplate().replace("URL_PLACEHOLDER", "/v1/docs/json");
         },
     })
 );
@@ -52,7 +52,7 @@ apiDocs.get("/docs/json", (c) => {
 });
 
 // Mount API docs
-app.route("/api", apiDocs);
+app.route("/v1", apiDocs);
 
 // Home route
 app.get("/", async (c) => {
@@ -60,9 +60,9 @@ app.get("/", async (c) => {
         message: "Welcome to Hono API with Bun!",
         endpoints: {
             api: {
-                products: "/api/products",
-                productById: "/api/products/:id",
-                documentation: "/api/docs",
+                products: "/v1/products",
+                productById: "/v1/products/:id",
+                documentation: "/v1/docs",
             },
             root: "/",
         },
